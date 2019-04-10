@@ -9,4 +9,8 @@ Project Structure
 
 Purpose of directories within the project:
     
-    * Virtual - Python3 virtualenv for running and developing the system. 
+    * VIRTUAL 
+        - Python3 virtualenv for running and developing the system. 
+
+    * game-runner 
+        - Python modules for running the games. 
