@@ -27,9 +27,17 @@ Purpose of directories within the project:
     * VIRTUAL 
         - Python3 virtualenv for running and developing the system. 
 
-    * game-runner 
-        - Python modules for running the games. 
-
     * frotz
         - Git sub-module containing the frotz z-machine interpreter.
           https://gitlab.com/DavidGriffith/frotz
+
+    * game-runner 
+        - Python modules for running the games. 
+    
+    * z8
+        - Z-Machine story files that can be run with frotz.
+        - The repo includes one z8 for testing purposes.  A build of the
+          open source version of Adventure sourced from:
+            
+                http://quuxplusone.github.io/Advent/index.html
+
