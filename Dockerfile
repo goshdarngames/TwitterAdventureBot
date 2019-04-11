@@ -9,3 +9,6 @@ WORKDIR /home/tab
 
 #copy across story file
 COPY z8 /home/tab/z8
+
+#copy frotz source code
+COPY frotz /home/tab/frotz
