@@ -15,8 +15,15 @@ COPY frotz /home/tab/frotz
 
 #create user 'tab' to run the system
 RUN adduser -Ds /bin/sh tab
-WORKDIR /home/tab
+
+#make and install frotz
+WORKDIR /home/tab/frotz
+
+#RUN make dumb
+
+
 
 #change user to tab for execution of the Twitter Bot
-USER tab
+#USER tab
 
+#WORKDIR /home/tab
