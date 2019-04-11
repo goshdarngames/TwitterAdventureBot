@@ -2,10 +2,14 @@
 
 FROM alpine
 
+RUN apk update
+
 #install C compiler and make to build frotz and clean up after
-RUN apk add --update --no-cache build-base sudo \
-  && rm -rf /tmp/* \
-  && rm -rf /var/cache/apk/*
+RUN apk add --virtual build-dependencies \
+    build-base gcc wget git 
+
+#  && rm -rf /tmp/* \
+#  && rm -rf /var/cache/apk/*
 
 #copy across story file
 COPY z8 /home/tab/z8
