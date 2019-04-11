@@ -14,3 +14,7 @@ Purpose of directories within the project:
 
     * game-runner 
         - Python modules for running the games. 
+
+    * frotz
+        - Git sub-module containing the frotz z-machine interpreter.
+          https://gitlab.com/DavidGriffith/frotz
