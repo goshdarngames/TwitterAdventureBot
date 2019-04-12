@@ -1,11 +1,13 @@
 #############################################################################
-# frotz_runner_test.py
+# tab.py
 #----------------------------------------------------------------------------
-# Tests for the frotz runner module.
+# Twitter Adventure Bot
+#
+# Allows an Interactive Fiction game to be controlled by multiple users
+# through twitter comments.
 #############################################################################
 
-from frotz_runner import *
 
-#simple test function
-def test_func ():
-    assert func ( 4 ) == 5;
+#simple function to verify unit tests are working
+def func ( x ):
+    return x + 1;

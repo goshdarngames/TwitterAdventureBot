@@ -1,11 +1,14 @@
 #############################################################################
-# frotz_runner.py
+# tab_test.py
 #----------------------------------------------------------------------------
-# Provides functions that can be used to control frotz running in 'dumb'
-# mode.
+# Tests for the Twitter Adventure Bot
 #############################################################################
 
+import mock
+import pytest
 
-#simple function to verify unit tests are working
-def func ( x ):
-    return x + 1;
+from tab import *
+
+#simple test function
+def test_func ():
+    assert func ( 4 ) == 5;
