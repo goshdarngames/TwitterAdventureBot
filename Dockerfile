@@ -35,7 +35,13 @@ RUN rm -rf /home/tab/frotz       \
   && rm -rf /tmp/*               \
   && rm -rf /var/cache/apk/*
 
-
 #change user to tab for execution of the Twitter Bot
 USER tab
 
+#copy over python files
+
+COPY tab.py /home/tab/tab.py
+
+#run the python file
+
+ENTRYPOINT [ "python3", "tab.py" ]
