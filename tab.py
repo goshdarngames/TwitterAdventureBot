@@ -7,7 +7,16 @@
 # through twitter comments.
 #############################################################################
 
+import sys
 
-#simple function to verify unit tests are working
-def func ( x ):
-    return x + 1;
+def create_frotz_runner ():
+    pass
+
+#----------------------------------------------------------------------------
+
+def main ():
+    
+    print ( "Twitter Adventure Bot" )
+
+if __name__ == "__main__":
+    sys.exit ( main () )
