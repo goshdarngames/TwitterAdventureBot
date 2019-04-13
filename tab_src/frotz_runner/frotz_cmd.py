@@ -1,16 +1,28 @@
 from frotz_runner import *
 import time
 
-print ( "Starting frotz...." )
+print ( "Starting dfrotz...." )
 
 runner = FrotzRunner ( "z8/advent.z8" )
 
 
 while True:
-    output = runner.readline () 
+
+    #Try and print all output from dfrotz to the console
+    # - retry a few times with a delay between each line
     
-    if output is not None:
-        print ( output )
-    else:
-        break
+    num_retry = 5
+
+    while num_retry > 0:
+    
+        output = runner.readline () 
+
+        if output is not None:
+            num_retry = 5
+            print ( output )
+        else:
+            num_retry -= 1
+            time.sleep ( .100 )
+
+    usr_input = input ( "Input >> " )
 
