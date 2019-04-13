@@ -1,5 +1,6 @@
 from frotz_runner import *
 import time
+import sys
 
 print ( "Starting dfrotz...." )
 
@@ -17,12 +18,20 @@ while True:
     
         output = runner.readline () 
 
-        if output is not None:
-            num_retry = 5
-            print ( output )
-        else:
+        if output is None:
+
             num_retry -= 1
             time.sleep ( .100 )
+
+        elif output == '':
+
+            print ( "The dfrotz process ended." )
+            sys.exit ( 0 )
+
+        else:
+
+            num_retry = 5
+            print ( output )
 
     usr_input = input ( "Input >> " )
 

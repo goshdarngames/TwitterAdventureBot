@@ -4,8 +4,9 @@ from threading import Thread
 from queue import Queue, Empty
 
 def enqueue_output ( out, queue ):
-    for line in iter ( out.readline, '' ):
+    for line in iter ( out.readline, b'' ):
         queue.put ( line )
+    queue.put ( b'' )
     out.close ()
 
 class FrotzRunner:
