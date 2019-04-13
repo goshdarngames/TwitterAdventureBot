@@ -11,9 +11,11 @@ def enqueue_output ( out, queue ):
 
 class FrotzRunner:
 
-    def __init__ ( self, gameName ):
+    def __init__ ( self, gamePath ):
 
-        self.subP = Popen ( ['dfrotz'], stdout=PIPE, universal_newlines=True )
+        self.subP = Popen ( ['dfrotz', gamePath ], 
+                            stdout=PIPE, stdin=PIPE, 
+                            universal_newlines=True )
 
         self.outputQueue = Queue ()
 

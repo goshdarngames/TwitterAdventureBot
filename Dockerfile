@@ -40,8 +40,8 @@ USER tab
 
 #copy over python files
 
-COPY tab_src/ /home/tab/tab_src
-WORKDIR /home/tab/tab_src/frotz_runner
+COPY tab_src/frotz_runner/ /home/tab/
+WORKDIR /home/tab/
 
 #run the python file
 
