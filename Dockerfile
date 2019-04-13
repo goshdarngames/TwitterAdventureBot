@@ -40,8 +40,9 @@ USER tab
 
 #copy over python files
 
-COPY tab.py /home/tab/tab.py
+COPY tab_src/ /home/tab/tab_src
+WORKDIR /home/tab/tab_src/frotz_runner
 
 #run the python file
 
-ENTRYPOINT [ "python3", "tab.py" ]
+ENTRYPOINT [ "python3", "frotz_cmd.py" ]
