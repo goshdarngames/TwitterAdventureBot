@@ -19,7 +19,8 @@ class FrotzRunner:
 
         self.subP = Popen ( ['dfrotz', gamePath ], 
                             stdout = PIPE, stdin = PIPE, 
-                            universal_newlines = True )
+                            universal_newlines = True,
+                            bufsize = 1                   )
 
         self.outputQueue = Queue ()
 
