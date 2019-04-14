@@ -4,12 +4,9 @@ from queue import Empty
 import time
 import sys
 
-print ( "Starting dfrotz...." )
 
-runner = FrotzRunner ( "z8/advent.z8" )
+def print_output ( runner ):
 
-
-while True:
 
     #Try and print all output from dfrotz to the console
     # - retry a few times with a delay between each line
@@ -19,7 +16,7 @@ while True:
     while num_retry > 0:
     
         try:
-            output = runner.readline () 
+            output = runner.read_output_line () 
         
         #if the output queue is empty wait and try again until num_retry = 0
         except Empty:
@@ -34,12 +31,33 @@ while True:
             if output == '':
 
                 print ( "The dfrotz process ended." )
-                sys.exit ( 0 )
+                return
 
             #print output and reset num_retry in case there is more output
             else:
                 num_retry = 5
                 print ( output )
 
-    usr_input = input ( "Input >> " )
+#----------------------------------------------------------------------------
 
+def main ():
+
+    print ( "Starting dfrotz...." )
+
+    runner = FrotzRunner ( "z8/advent.z8" )
+
+    while True:
+
+        print_output ( runner )
+
+        if runner.poll() != None:
+            break
+
+        usr_input = input ( "Input >> " )
+
+        runner.write_command ( usr_input + "\n" )
+
+    return runner.return_code ()
+
+if __name__ == "__main__":
+    sys.exit ( main () )

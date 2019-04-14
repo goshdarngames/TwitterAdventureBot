@@ -9,10 +9,6 @@ def read_subp_output ( subPstdout, outQueue ):
     for line in iter ( subPstdout.readline, b'' ):
         outQueue.put ( line )
 
-    #process has halted - write an EOF to the output
-    outQueue.put ( b'' )
-    subPstdout.close ()
-
 def write_subp_input ( subPstdin, inQueue ):
 
     while True:
@@ -45,11 +41,26 @@ class FrotzRunner:
         self.inputThread.daemon = True
         self.inputThread.start ()
 
-    def readline ( self ):
+   #------------------------------------------------------------------------- 
+
+    def read_output_line  ( self ):
 
         return self.outputQueue.get_nowait ()
 
-    def writeCommand ( self, cmd ):
+    #------------------------------------------------------------------------
+
+    def write_command ( self, cmd ):
 
         self.inputQueue.put ( cmd )
 
+    #------------------------------------------------------------------------
+
+    def poll ( self ):
+
+        return self.subP.poll ()
+
+    #------------------------------------------------------------------------
+
+    def return_code ( self ):
+
+        return self.subP.returncode
