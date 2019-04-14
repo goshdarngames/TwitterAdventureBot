@@ -13,6 +13,9 @@ def read_subp_output ( subPstdout, outQueue ):
     outQueue.put ( b'' )
     subPstdout.close ()
 
+def write_subp_input ( subPstdin, inQueue ):
+    pass
+
 class FrotzRunner:
 
     def __init__ ( self, gamePath ):
@@ -23,6 +26,7 @@ class FrotzRunner:
                             bufsize = 1                   )
 
         self.outputQueue = Queue ()
+        self.inputQueue = Queue ()
 
         self.outputThread = \
                 Thread ( target = read_subp_output, \
@@ -30,6 +34,13 @@ class FrotzRunner:
         
         self.outputThread.daemon = True
         self.outputThread.start ()
+
+        self.inputThread = \
+                Thread ( target = write_subp_input, \
+                         args = ( self.subP.stdin, self.inputQueue ) )
+        
+        self.inputThread.daemon = True
+        self.inputThread.start ()
 
     def readline ( self ):
 
