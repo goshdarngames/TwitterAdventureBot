@@ -1,4 +1,4 @@
-import sys
+import sys, time
 from subprocess import PIPE, Popen
 from threading import Thread
 from queue import Queue, Empty
@@ -14,7 +14,10 @@ def read_subp_output ( subPstdout, outQueue ):
     subPstdout.close ()
 
 def write_subp_input ( subPstdin, inQueue ):
-    pass
+
+    while True:
+
+        subPstdin.write ( inQueue.get () )
 
 class FrotzRunner:
 
@@ -46,4 +49,7 @@ class FrotzRunner:
 
         return self.outputQueue.get_nowait ()
 
+    def writeCommand ( self, cmd ):
+
+        self.inputQueue.put ( cmd )
 
