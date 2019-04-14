@@ -5,11 +5,13 @@ from queue import Queue, Empty
 
 def subprocess_communication ( subP, outQueue ):
 
+    #keep reading output lines and adding to queue until program finishes
     for line in iter ( subP.stdout.readline, b'' ):
         outQueue.put ( line )
 
+    #process has halted - write an EOF to the output
     outQueue.put ( b'' )
-    out.close ()
+    subP.stdout.close ()
 
 class FrotzRunner:
 
