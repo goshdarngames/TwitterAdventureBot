@@ -30,10 +30,6 @@ class FrotzRunner:
 
     def readline ( self ):
 
-        try:
-            line =  self.outputQueue.get_nowait ()
-            return line
-        except Empty:
-            return None
+        return self.outputQueue.get_nowait ()
 
 

@@ -1,4 +1,6 @@
 from frotz_runner import *
+from queue import Empty
+
 import time
 import sys
 
@@ -16,22 +18,28 @@ while True:
 
     while num_retry > 0:
     
-        output = runner.readline () 
-
-        if output is None:
+        try:
+            output = runner.readline () 
+        
+        #if the output queue is empty wait and try again until num_retry = 0
+        except Empty:
 
             num_retry -= 1
             time.sleep ( .100 )
 
-        elif output == '':
-
-            print ( "The dfrotz process ended." )
-            sys.exit ( 0 )
-
+        #output was not empty
         else:
 
-            num_retry = 5
-            print ( output )
+            # '' is used to signify EOF 
+            if output == '':
+
+                print ( "The dfrotz process ended." )
+                sys.exit ( 0 )
+
+            #print output and reset num_retry in case there is more output
+            else:
+                num_retry = 5
+                print ( output )
 
     usr_input = input ( "Input >> " )
 
