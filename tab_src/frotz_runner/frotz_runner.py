@@ -3,10 +3,12 @@ from subprocess import PIPE, Popen
 from threading import Thread
 from queue import Queue, Empty
 
-def enqueue_output ( out, queue ):
-    for line in iter ( out.readline, b'' ):
-        queue.put ( line )
-    queue.put ( b'' )
+def subprocess_communication ( subP, outQueue ):
+
+    for line in iter ( subP.stdout.readline, b'' ):
+        outQueue.put ( line )
+
+    outQueue.put ( b'' )
     out.close ()
 
 class FrotzRunner:
@@ -14,14 +16,14 @@ class FrotzRunner:
     def __init__ ( self, gamePath ):
 
         self.subP = Popen ( ['dfrotz', gamePath ], 
-                            stdout=PIPE, stdin=PIPE, 
-                            universal_newlines=True )
+                            stdout = PIPE, stdin = PIPE, 
+                            universal_newlines = True )
 
         self.outputQueue = Queue ()
 
         self.outputThread = \
-                Thread ( target=enqueue_output, \
-                         args = ( self.subP.stdout, self.outputQueue ) )
+                Thread ( target = subprocess_communication, \
+                         args = ( self.subP, self.outputQueue ) )
         
         self.outputThread.daemon = True
         self.outputThread.start ()
