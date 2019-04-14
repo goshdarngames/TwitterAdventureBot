@@ -1,3 +1,7 @@
+# frotz_cmd.py
+#
+# Simple command line program for testing the frotz runner.
+
 from frotz_runner import *
 from queue import Empty
 
