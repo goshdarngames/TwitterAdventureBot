@@ -3,15 +3,15 @@ from subprocess import PIPE, Popen
 from threading import Thread
 from queue import Queue, Empty
 
-def subprocess_communication ( subP, outQueue ):
+def read_subp_output ( subPstdout, outQueue ):
 
     #keep reading output lines and adding to queue until program finishes
-    for line in iter ( subP.stdout.readline, b'' ):
+    for line in iter ( subPstdout.readline, b'' ):
         outQueue.put ( line )
 
     #process has halted - write an EOF to the output
     outQueue.put ( b'' )
-    subP.stdout.close ()
+    subPstdout.close ()
 
 class FrotzRunner:
 
@@ -25,8 +25,8 @@ class FrotzRunner:
         self.outputQueue = Queue ()
 
         self.outputThread = \
-                Thread ( target = subprocess_communication, \
-                         args = ( self.subP, self.outputQueue ) )
+                Thread ( target = read_subp_output, \
+                         args = ( self.subP.stdout, self.outputQueue ) )
         
         self.outputThread.daemon = True
         self.outputThread.start ()
