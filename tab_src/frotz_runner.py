@@ -59,7 +59,44 @@ class FrotzRunner:
 
     def read_output_line  ( self ):
 
-        return self.outputQueue.get_nowait ()
+        line = self.outputQueue.get_nowait ()
+
+        if line == '':
+            
+            raise EOFError ()
+
+        else:
+
+            return line
+
+    #------------------------------------------------------------------------
+
+    def read_output_block ( self, num_retry = 5, wait_time = 0.1 ):
+
+        retries = num_retry
+
+        output_lines = []
+
+        while retries > 0:
+
+            try:
+
+                line = self.read_output_line () 
+
+            except Empty:
+
+                retries -= 1
+                time.sleep ( wait_time )
+
+            except EOFError:
+
+                retries = 0
+
+            else:
+
+                output_lines.append ( line )
+
+        return output_lines
 
     #------------------------------------------------------------------------
 
