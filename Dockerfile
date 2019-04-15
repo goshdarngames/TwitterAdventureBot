@@ -35,14 +35,23 @@ RUN rm -rf /home/tab/frotz       \
   && rm -rf /tmp/*               \
   && rm -rf /var/cache/apk/*
 
-#change user to tab for execution of the Twitter Bot
-USER tab
-
 #copy over python files
 
 COPY tab_src /home/tab/
 WORKDIR /home/tab/
 
+#install required python modules
+
+COPY requirements.txt /home/tab/requirements.txt
+RUN pip3 install --upgrade pip
+RUN pip3 install -r requirements.txt
+
+#--Install Complete
+
+#change user to tab for execution of the Twitter Bot
+
+USER tab
+
 #run the python file
 
-ENTRYPOINT [ "python3", "frotz_cmd.py" ]
+ENTRYPOINT [ "python3", "twitter_cmd.py" ]

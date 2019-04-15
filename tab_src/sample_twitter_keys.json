@@ -1,0 +1,13 @@
+--This a sample of the JSON the twitter module expects
+--Fill in the relevant detail and delete these lines
+--Save the file as  "twitter_keys"
+{
+    "consumer_key"         : " ... ",
+   
+    "consumer_secret "     : " ... ",
+
+    "access_token"         : " ... ",
+    
+    "access_token_secret"  : " ... "
+}
+   
