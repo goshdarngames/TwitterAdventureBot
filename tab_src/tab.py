@@ -7,7 +7,7 @@
 # through twitter comments.
 #############################################################################
 
-import sys, time
+import sys, time, uuid
 
 from frotz_runner import FrotzRunner
 from twitter_connection import TwitterConnection
@@ -22,9 +22,19 @@ def post_header_status ( tc, text ):
     
 def game_loop ( frotz, tc ):
 
+    unique = str ( uuid.uuid4 () )[:8]
+
+    headerMsg += "Starting Adventure! \n\n"+unique
+
     header, reply = post_header_status ( tc, "Starting Adventure" )
 
+    commandSent = False
+
     while True:
+
+        if commandSent:
+
+            #post new header
 
         outID = header.id
 
