@@ -11,6 +11,11 @@ def load_keys ():
 
         return data
 
+def chop_text ( txt, n = 265 ):
+
+    #thanks stack overflow...
+
+     return [ txt [ i : i + n ] for i in range ( 0, len ( txt ), n ) ]
 
 class TwitterConnection:
 
@@ -30,3 +35,6 @@ class TwitterConnection:
 
         self.api = tweepy.API ( auth )
 
+    #------------------------------------------------------------------------
+
+    

@@ -57,4 +57,5 @@ USER tab
 
 #run the python file
 
-ENTRYPOINT [ "python3", "tab.py" ]
+ENTRYPOINT [ "python3", "twitter_cmd.py" ]
+#ENTRYPOINT [ "python3", "tab.py" ]
