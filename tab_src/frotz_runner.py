@@ -19,13 +19,19 @@ class FrotzRunner:
 
     def __init__ ( self, gamePath ):
 
+        self.gamePath = gamePath
+
+        self.outputQueue = Queue ()
+        self.inputQueue = Queue ()
+
+    #------------------------------------------------------------------------
+
+    def __enter__ ( self ):
+
         self.subP = Popen ( ['dfrotz', gamePath ], 
                             stdout = PIPE, stdin = PIPE, 
                             universal_newlines = True,
                             bufsize = 1                   )
-
-        self.outputQueue = Queue ()
-        self.inputQueue = Queue ()
 
         self.outputThread = \
                 Thread ( target = read_subp_output, \
@@ -41,7 +47,13 @@ class FrotzRunner:
         self.inputThread.daemon = True
         self.inputThread.start ()
 
-   #------------------------------------------------------------------------- 
+    #------------------------------------------------------------------------ 
+
+    def __exit__ ( self ):
+        
+        self.subP.kill ()
+
+    #------------------------------------------------------------------------ 
 
     def read_output_line  ( self ):
 
