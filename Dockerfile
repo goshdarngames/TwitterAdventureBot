@@ -35,9 +35,8 @@ RUN rm -rf /home/tab/frotz       \
   && rm -rf /tmp/*               \
   && rm -rf /var/cache/apk/*
 
-#copy over python files
+#change to tab workdir
 
-COPY tab_src /home/tab/
 WORKDIR /home/tab/
 
 #install required python modules
@@ -45,6 +44,10 @@ WORKDIR /home/tab/
 COPY requirements.txt /home/tab/requirements.txt
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
+
+#copy over python files
+
+COPY tab_src /home/tab/
 
 #--Install Complete
 
