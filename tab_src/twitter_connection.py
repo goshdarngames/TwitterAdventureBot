@@ -9,6 +9,26 @@ def load_keys ():
 
         data = json.load ( json_data_file ) 
 
-        print ( "Json data:" )
+        return data
 
-        print ( data )
+
+class TwitterConnection:
+
+    def __init__ ( self ):
+
+        #create authentication
+
+        keys = load_keys ()
+
+        print ( keys )
+
+        auth = tweepy.OAuthHandler ( 
+                keys [ "consumer_key" ],
+                keys [ "consumer_secret" ] )
+
+        auth.set_access_token (
+                keys [ "access_token" ],
+                keys [ "access_token_secret"] )
+
+        self.api = tweepy.API ( auth )
+
