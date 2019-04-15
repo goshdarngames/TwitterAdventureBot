@@ -20,8 +20,6 @@ class TwitterConnection:
 
         keys = load_keys ()
 
-        print ( keys )
-
         auth = tweepy.OAuthHandler ( 
                 keys [ "consumer_key" ],
                 keys [ "consumer_secret" ] )
