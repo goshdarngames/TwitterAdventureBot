@@ -14,39 +14,39 @@ from twitter_connection import TwitterConnection
 
 def post_header_status ( tc, text ):
 
-    header = tc.api.update_status ( text )
+    unique = str ( uuid.uuid4 () )[:8]
 
-    reply = tc.api.update_status ( "Reply here to send command:", header.id )
+    text += "\n\n"+unique
 
-    return ( header, reply )
+    headerID = tc.send_message_chain ( [ text ] ) [ 0 ]
+
+    return headerID
     
 def game_loop ( frotz, tc ):
 
-    unique = str ( uuid.uuid4 () )[:8]
 
-    headerMsg += "Starting Adventure! \n\n"+unique
+    headerID = post_header_status ( tc, "Starting Adventure" )
 
-    header, reply = post_header_status ( tc, "Starting Adventure" )
-
-    commandSent = False
+    command = None
 
     while True:
 
-        if commandSent:
+        if command != None:
 
-            #post new header
+            msg = "Sending Command: "+command
 
-        outID = header.id
+            headerID = post_header_status ( tc, msg )
 
-        for line in frotz.read_output_block ():
+
+        #out ID is the message that the next output chain should reply to
+        outID = headerID
+
+        output = frotz.read_output_block ()
+
+        if len ( output ) > 0:
             
-            print ( "Sending output line.", flush = True )
-            
-            outStatus = tc.api.update_status ( line, outID )
+            outID = tc.send_message_chain ( output, outID ) [ -1 ]
 
-            outID = outStatus.id
-            
-            time.sleep ( 0.1 )
 
         time.sleep ( 0.3 )
 
