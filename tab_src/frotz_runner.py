@@ -28,7 +28,7 @@ class FrotzRunner:
 
     def __enter__ ( self ):
 
-        self.subP = Popen ( ['dfrotz', gamePath ], 
+        self.subP = Popen ( ['dfrotz', self.gamePath ], 
                             stdout = PIPE, stdin = PIPE, 
                             universal_newlines = True,
                             bufsize = 1                   )
@@ -47,9 +47,11 @@ class FrotzRunner:
         self.inputThread.daemon = True
         self.inputThread.start ()
 
+        return self
+
     #------------------------------------------------------------------------ 
 
-    def __exit__ ( self ):
+    def __exit__ ( self, *args ):
         
         self.subP.kill ()
 

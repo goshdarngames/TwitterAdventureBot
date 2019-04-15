@@ -48,20 +48,20 @@ def main ():
 
     print ( "Starting dfrotz...." )
 
-    runner = FrotzRunner ( "z8/advent.z8" )
+    with FrotzRunner ( "z8/advent.z8" ) as gameRunner: 
 
-    while True:
+        while True:
 
-        print_output ( runner )
+            print_output ( gameRunner )
 
-        if runner.poll() != None:
-            break
+            if gameRunner.poll() != None:
+                break
 
-        usr_input = input ( "Input >> " )
+            usr_input = input ( "Input >> " )
 
-        runner.write_command ( usr_input + "\n" )
+            gameRunner.write_command ( usr_input + "\n" )
 
-    return runner.return_code ()
+        return gameRunner.return_code ()
 
 if __name__ == "__main__":
     sys.exit ( main () )
