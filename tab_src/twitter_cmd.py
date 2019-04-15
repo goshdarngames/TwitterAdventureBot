@@ -10,9 +10,9 @@ def main ():
 
         text = input ( "Tweet: " )
 
-        status = tc.api.update_status ( text )
+        id_list = tc.send_message_chain ( [ text ] )
 
-        print ( status )
+        print ( id_list )
 
 if __name__ == "__main__" :
 

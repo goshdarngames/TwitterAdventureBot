@@ -11,11 +11,15 @@ def load_keys ():
 
         return data
 
+#----------------------------------------------------------------------------
+
 def chop_text ( txt, n = 265 ):
 
     #thanks stack overflow...
 
      return [ txt [ i : i + n ] for i in range ( 0, len ( txt ), n ) ]
+
+#----------------------------------------------------------------------------
 
 class TwitterConnection:
 
@@ -36,5 +40,22 @@ class TwitterConnection:
         self.api = tweepy.API ( auth )
 
     #------------------------------------------------------------------------
+
+    def send_message_chain ( self, msgList, replyID = None ):
+
+        msgIDs = []
+
+        for msg in msgList:
+
+            for chopped in chop_text ( msg ):
+
+                status = self.api.update_status ( chopped, replyID )
+
+                replyID = status.id
+
+                msgIDs.append ( replyID )
+
+        return msgIDs
+
 
     
