@@ -17,6 +17,25 @@ from twitter_connection import TwitterConnection
 
 #----------------------------------------------------------------------------
 
+#How long to sleep between read commands
+CMD_READ_SLEEP = 60
+
+#How long to sleep at the end of each 'game loop'
+GAME_LOOP_SLEEP = 60
+
+#----------------------------------------------------------------------------
+
+def log_msg ( text ):
+
+    print ( msg, flush = True )
+
+#----------------------------------------------------------------------------
+
+def get_cmds_from_twitter ( tc, tcLock, cmdQ ):
+
+    while True:
+
+        time.sleep ( CMD_READ_SLEEP )
 
 #----------------------------------------------------------------------------
 
@@ -54,7 +73,7 @@ def game_loop ( frotz, tc, tcLock, cmdQueue ):
 
             msg = "Sending Command: "+command
 
-            print ( msg, flush=True )
+            log_msg ( msg )
 
             headerID = post_header_status ( tc, tcLock, msg )
 
@@ -69,21 +88,21 @@ def game_loop ( frotz, tc, tcLock, cmdQueue ):
         if len ( output ) > 0:
             
             consoleMsg = "Sending output:\n" + join( output )
-            print ( consoleMsg, flush = True )
+            log_msg ( consoleMsg )
             
             with tcLock:
                 outID = tc.send_message_chain ( output, outID ) [ -1 ]
 
 
-        time.sleep ( 0.3 )
+        time.sleep ( GAME_LOOP_SLEEP )
 
 #----------------------------------------------------------------------------
 
 def main ():
     
-    print ( "Twitter Adventure Bot", flush = True )
+    log_msg ( "Twitter Adventure Bot" )
 
-    print ( "Creating Twitter Connection", flush = True )
+    log_msg ( "Creating Twitter Connection"\)
 
     tc = TwitterConnection ()
 
@@ -94,7 +113,14 @@ def main ():
     #to the game
     twitterCommandQueue = Queue ()
 
-    print ( "Creating FrotzRunner", flush = True )
+    twitterCommandThread = \
+            Thread ( target = get_cmds_from_twitter,
+                     args   = ( tc, tcLock, twitterCommandQ ) )
+
+    twitterCommandThread.daemon = True
+    twitterCommandThread.start ()
+
+    log_msg ( "Creating FrotzRunner" )
 
     with FrotzRunner ( "z8/advent.z8" ) as frotz:
 
