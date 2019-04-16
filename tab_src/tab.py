@@ -9,8 +9,15 @@
 
 import sys, time, uuid
 
+from threading import Thread, Lock
+
 from frotz_runner import FrotzRunner
 from twitter_connection import TwitterConnection
+
+#----------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------
 
 def post_header_status ( tc, text ):
 
@@ -18,17 +25,18 @@ def post_header_status ( tc, text ):
 
     text += "\n\n"+unique
 
-    headerID = tc.send_message_chain ( [ text ] ) [ 0 ]
+    with tcLock:
+        headerID = tc.send_message_chain ( [ text ] ) [ 0 ]
 
     return headerID
 
 #----------------------------------------------------------------------------
     
-def game_loop ( frotz, tc ):
+def game_loop ( frotz, tc, tcLock ):
 
     #The headerID holds the ID of the message that the next piece of 
     #output should reply to
-    headerID = post_header_status ( tc, "Starting Adventure" )
+    headerID = post_header_status ( tc, tcLock, "Starting Adventure" )
 
     #The text of the next command to send to the game will be stored here
     command = None
@@ -44,7 +52,7 @@ def game_loop ( frotz, tc ):
 
             print ( msg, flush=True )
 
-            headerID = post_header_status ( tc, msg )
+            headerID = post_header_status ( tc, tcLock, msg )
 
             frotz.write_command ( command + "\n" )
 
@@ -61,7 +69,8 @@ def game_loop ( frotz, tc ):
             consoleMsg = "Sending output:\n" + join( output )
             print ( consoleMsg, flush = True )
             
-            outID = tc.send_message_chain ( output, outID ) [ -1 ]
+            with tcLock:
+                outID = tc.send_message_chain ( output, outID ) [ -1 ]
 
 
         time.sleep ( 0.3 )
@@ -75,6 +84,9 @@ def main ():
     print ( "Creating Twitter Connection", flush = True )
 
     tc = TwitterConnection ()
+
+    #only allow one thread to use twitter object 
+    tcLock = Lock ()
 
     print ( "Creating FrotzRunner", flush = True )
 
