@@ -9,6 +9,7 @@
 
 import sys, time, uuid
 
+from Queue import Queue, Empty
 from threading import Thread, Lock
 
 from frotz_runner import FrotzRunner
@@ -19,7 +20,7 @@ from twitter_connection import TwitterConnection
 
 #----------------------------------------------------------------------------
 
-def post_header_status ( tc, text ):
+def post_header_status ( tc, tcLock, text ):
 
     unique = str ( uuid.uuid4 () )[:8]
 
@@ -32,21 +33,24 @@ def post_header_status ( tc, text ):
 
 #----------------------------------------------------------------------------
     
-def game_loop ( frotz, tc, tcLock ):
+def game_loop ( frotz, tc, tcLock, cmdQueue ):
 
     #The headerID holds the ID of the message that the next piece of 
     #output should reply to
     headerID = post_header_status ( tc, tcLock, "Starting Adventure" )
 
-    #The text of the next command to send to the game will be stored here
-    command = None
-
     while True:
 
         #if a commmand is due to be sent then send it and change the 
         #header so later output is posted as a reply
+        
+        try:
+            command = cmdQueue.get ()
 
-        if command != None:
+        except Empty:
+            pass
+
+        else:
 
             msg = "Sending Command: "+command
 
@@ -55,8 +59,6 @@ def game_loop ( frotz, tc, tcLock ):
             headerID = post_header_status ( tc, tcLock, msg )
 
             frotz.write_command ( command + "\n" )
-
-            command = None
 
 
         #out ID is the message that the next output chain should reply to
@@ -88,11 +90,15 @@ def main ():
     #only allow one thread to use twitter object 
     tcLock = Lock ()
 
+    #this queue will hold commands from twitter that should be sent
+    #to the game
+    twitterCommandQueue = Queue ()
+
     print ( "Creating FrotzRunner", flush = True )
 
     with FrotzRunner ( "z8/advent.z8" ) as frotz:
 
-        game_loop ( frotz, tc )
+        game_loop ( frotz, tc, tcLock, twitterCommandQueue )
 
 
 
