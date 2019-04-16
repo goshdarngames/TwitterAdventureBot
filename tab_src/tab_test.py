@@ -4,8 +4,15 @@ import tab
 
 def test_cmd_from_text ():
 
-    test_txt = "Bleh"
+    testCases = \
+    [
+        { 
+            "text" : "Blah.",
+            "cmd"  : None
+        }
+    ]
 
-    ret = tab.cmd_from_text ( test_txt )
+    for test in testCases:
 
-    assert ( ret == None )
+        assert ( tab.cmd_from_text ( test [ "text" ] ) == test [ "cmd" ] )
+
