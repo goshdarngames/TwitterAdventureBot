@@ -7,7 +7,7 @@
 # through twitter comments.
 #############################################################################
 
-import sys, time, uuid
+import sys, time, uuid, random
 
 from queue import Queue, Empty
 from threading import Thread, Lock
@@ -47,6 +47,8 @@ def get_cmds_from_twitter ( tc, tcLock, cmdQ ):
 
         mentions = []
 
+        commands = []
+
         with tcLock:
 
             mentions =  tc.api.mentions_timeline ()
@@ -63,9 +65,10 @@ def get_cmds_from_twitter ( tc, tcLock, cmdQ ):
 
             else:
 
-                cmd = cmd_from_mention ( mention )
+                cmd = cmd_from_text ( text )
+                commands.append ( cmd )
 
-                cmdQ.put ( cmd )
+        cmdQ.put ( random.choice ( commands ) )
                 
 #----------------------------------------------------------------------------
 
