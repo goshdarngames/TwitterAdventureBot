@@ -21,21 +21,34 @@ def post_header_status ( tc, text ):
     headerID = tc.send_message_chain ( [ text ] ) [ 0 ]
 
     return headerID
+
+#----------------------------------------------------------------------------
     
 def game_loop ( frotz, tc ):
 
-
+    #The headerID holds the ID of the message that the next piece of 
+    #output should reply to
     headerID = post_header_status ( tc, "Starting Adventure" )
 
+    #The text of the next command to send to the game will be stored here
     command = None
 
     while True:
+
+        #if a commmand is due to be sent then send it and change the 
+        #header so later output is posted as a reply
 
         if command != None:
 
             msg = "Sending Command: "+command
 
+            print ( msg, flush=True )
+
             headerID = post_header_status ( tc, msg )
+
+            frotz.write_command ( command + "\n" )
+
+            command = None
 
 
         #out ID is the message that the next output chain should reply to
@@ -45,10 +58,15 @@ def game_loop ( frotz, tc ):
 
         if len ( output ) > 0:
             
+            consoleMsg = "Sending output:\n" + join( output )
+            print ( consoleMsg, flush = True )
+            
             outID = tc.send_message_chain ( output, outID ) [ -1 ]
 
 
         time.sleep ( 0.3 )
+
+#----------------------------------------------------------------------------
 
 def main ():
     
