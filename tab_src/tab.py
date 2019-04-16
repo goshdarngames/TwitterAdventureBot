@@ -18,14 +18,14 @@ from twitter_connection import TwitterConnection
 #----------------------------------------------------------------------------
 
 #How long to sleep between read commands
-CMD_READ_SLEEP = 60
+CMD_READ_SLEEP = 10
 
 #How long to sleep at the end of each 'game loop'
-GAME_LOOP_SLEEP = 60
+GAME_LOOP_SLEEP = 1
 
 #----------------------------------------------------------------------------
 
-def log_msg ( text ):
+def log_msg ( msg ):
 
     print ( msg, flush = True )
 
@@ -74,6 +74,8 @@ def get_cmds_from_twitter ( tc, tcLock, cmdQ ):
 
         time.sleep ( CMD_READ_SLEEP )
 
+        log_msg ( "Checking for mentions." )
+
         mentions = []
 
         commands = []
@@ -84,9 +86,21 @@ def get_cmds_from_twitter ( tc, tcLock, cmdQ ):
 
         if len ( mentions ) == 0:
 
+            #set this so the next set of mentions aren't ignored
+            latestMentionID = 0
+
+            continue
+
+        #ignore the first batch of mentions as they may have been sent before
+        #the system started
+
+        if latestMentionID == None:
+
+            latestMentionID = mentions [ 0 ].id
             continue
 
         for mention in mentions:
+
 
             if mention.id == latestMentionID:
 
@@ -94,12 +108,22 @@ def get_cmds_from_twitter ( tc, tcLock, cmdQ ):
 
             else:
 
-                cmd = cmd_from_text ( text )
-                commands.append ( cmd )
+                parsed_cmd = cmd_from_text ( mention.text )
+
+                if parsed_cmd == None:
+                    continue
+                
+                command = { "cmd" : parsed_cmd }
+
+                log_msg ( "Command Received:" )
+                log_msg ( command )
+
+                commands.append ( command )
 
                 latestMentionID = mention.id
 
-        cmdQ.put ( random.choice ( commands ) )
+        if len ( commands > 0 ):
+            cmdQ.put ( random.choice ( commands ) )
                 
 #----------------------------------------------------------------------------
 
@@ -133,23 +157,25 @@ def game_loop ( frotz, tc, tcLock, cmdQueue ):
         #header so later output is posted as a reply
         
         try:
-            command = cmdQueue.get ()
+            command = cmdQueue.get_nowait ()
 
         except Empty:
             pass
 
         else:
 
+            log_msg ( "Command:" )
+
             #Expect commands from the command queue to be dictionary
             #objects with the form { user : user.id, cmd : "..." }
 
-            msg = "Sending Command: "+command.cmd
+            msg = "Sending Command: "+command [ "cmd" ]
 
             log_msg ( msg )
 
             headerID = post_header_status ( tc, tcLock, msg )
 
-            frotz.write_command ( command.cmd + "\n" )
+            frotz.write_command ( command [ "cmd" ] + "\n" )
 
 
         #out ID is the message that the next output chain should reply to
@@ -159,7 +185,7 @@ def game_loop ( frotz, tc, tcLock, cmdQueue ):
 
         if len ( output ) > 0:
             
-            consoleMsg = "Sending output:\n" + join( output )
+            consoleMsg = "Sending output:\n" + "\n".join( output )
             log_msg ( consoleMsg )
             
             with tcLock:
@@ -187,7 +213,7 @@ def main ():
 
     twitterCommandThread = \
             Thread ( target = get_cmds_from_twitter,
-                     args   = ( tc, tcLock, twitterCommandQ ) )
+                     args   = ( tc, tcLock, twitterCommandQueue ) )
 
     twitterCommandThread.daemon = True
     twitterCommandThread.start ()
