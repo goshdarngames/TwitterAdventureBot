@@ -9,7 +9,7 @@
 
 import sys, time, uuid
 
-from Queue import Queue, Empty
+from queue import Queue, Empty
 from threading import Thread, Lock
 
 from frotz_runner import FrotzRunner
@@ -28,6 +28,11 @@ GAME_LOOP_SLEEP = 60
 def log_msg ( text ):
 
     print ( msg, flush = True )
+
+#----------------------------------------------------------------------------
+
+def cmd_from_text ( text ):
+    pass
 
 #----------------------------------------------------------------------------
 
@@ -127,7 +132,7 @@ def main ():
     
     log_msg ( "Twitter Adventure Bot" )
 
-    log_msg ( "Creating Twitter Connection"\)
+    log_msg ( "Creating Twitter Connection" )
 
     tc = TwitterConnection ()
 
