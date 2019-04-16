@@ -62,10 +62,15 @@ def cmd_from_text ( text ):
 
 def get_cmds_from_twitter ( tc, tcLock, cmdQ ):
 
-    #status id of the last mention tweet processed
+    # status id of the last mention tweet processed.  This is used to try
+    # and avoid processing the same command twice
+
     latestMentionID = None
 
     while True:
+
+        #sleep at the start of the loop so the thread will sleep after a 
+        # 'continue'
 
         time.sleep ( CMD_READ_SLEEP )
 
@@ -92,11 +97,18 @@ def get_cmds_from_twitter ( tc, tcLock, cmdQ ):
                 cmd = cmd_from_text ( text )
                 commands.append ( cmd )
 
+                latestMentionID = mention.id
+
         cmdQ.put ( random.choice ( commands ) )
                 
 #----------------------------------------------------------------------------
 
 def post_header_status ( tc, tcLock, text ):
+
+    """
+    Special method for posting headers with a unique number attached since
+    sometimes tweepy will block repeated messages.
+    """
 
     unique = str ( uuid.uuid4 () )[:8]
 
@@ -128,13 +140,16 @@ def game_loop ( frotz, tc, tcLock, cmdQueue ):
 
         else:
 
-            msg = "Sending Command: "+command
+            #Expect commands from the command queue to be dictionary
+            #objects with the form { user : user.id, cmd : "..." }
+
+            msg = "Sending Command: "+command.cmd
 
             log_msg ( msg )
 
             headerID = post_header_status ( tc, tcLock, msg )
 
-            frotz.write_command ( command + "\n" )
+            frotz.write_command ( command.cmd + "\n" )
 
 
         #out ID is the message that the next output chain should reply to
