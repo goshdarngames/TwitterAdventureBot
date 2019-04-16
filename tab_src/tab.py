@@ -32,7 +32,31 @@ def log_msg ( text ):
 #----------------------------------------------------------------------------
 
 def cmd_from_text ( text ):
-    pass
+    
+    if len ( text ) < 5:
+        return None
+
+    cmd = None
+
+    #check each line for a command
+
+    for line in text.split ( "\n" ):
+
+        #strip before checking for 'cmd' in case the user put spaces
+        line = line.strip ()
+
+        #check for cmd and return the rest of the command
+
+        if line [ : 4 ] == "cmd ":
+
+            cmd = line [ 4 : ]
+
+            cmd = cmd.strip ()
+
+            #NOTE: command/profanity filter goes here
+
+    return cmd 
+
 
 #----------------------------------------------------------------------------
 
