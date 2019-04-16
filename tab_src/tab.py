@@ -33,10 +33,35 @@ def log_msg ( text ):
 
 def get_cmds_from_twitter ( tc, tcLock, cmdQ ):
 
+    #status id of the last mention tweet processed
+    latestMentionID = None
+
     while True:
 
         time.sleep ( CMD_READ_SLEEP )
 
+        mentions = []
+
+        with tcLock:
+
+            mentions =  tc.api.mentions_timeline ()
+
+        if len ( mentions ) == 0:
+
+            continue
+
+        for mention in mentions:
+
+            if mention.id == latestMentionID:
+
+                break
+
+            else:
+
+                cmd = cmd_from_mention ( mention )
+
+                cmdQ.put ( cmd )
+                
 #----------------------------------------------------------------------------
 
 def post_header_status ( tc, tcLock, text ):
