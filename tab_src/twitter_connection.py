@@ -1,8 +1,12 @@
-import tweepy
-import json
+#############################################################################
+# twitter_connection.py
+#----------------------------------------------------------------------------
+# Provides a context manager that can be used to access Twitter
+#############################################################################
 
-from queue  import Queue, Empty
-from threading import Thread, Lock
+import json, threading, queue
+
+import tweepy
 
 def load_keys ():
 
@@ -28,7 +32,7 @@ def chop_text ( txt, n = 265 ):
 
 #----------------------------------------------------------------------------
 
-def check_mentions ( api, apiLock, mentionQ ):
+def check_mentions ( api, apiLock, mentionQ, stopEvent ):
     pass
 
 #----------------------------------------------------------------------------
@@ -47,24 +51,33 @@ class TwitterConnection:
                 keys [ "access_token" ],
                 keys [ "access_token_secret"] )
 
-        self.api = tweepy.API ( auth )
+        self._api = tweepy.API ( auth )
 
-        self.apiLock = Lock ()
+        # Used to ensure only one thread accesses the api object at a time
+        self._apiLock = threading.Lock ()
+
+        # Used to signal that the twitter connection is no longer needed
+        self._stopEvent = threading.Event ()
         
-        self.mentionQ = Queue ()
+        # Queue for posting and reading mentions from twitter
+        self._mentionQ = queue.Queue ()
 
-        self.mentionThread = \
-                Thread ( target = check_mentions, 
-                         args   = ( self.api, self.apiLock, self.mentionQ )) 
+        # This thread will loop continuously checking for twitter mentions
+        self.mentionThread = threading.Thread (  \
+                         target = check_mentions, 
+                         args   = ( self._api,
+                                    self._apiLock,
+                                    self._mentionQ,
+                                    self._stopEvent )) 
 
         self.mentionThread.daemon = True
         self.mentionThread.start ()
 
     #------------------------------------------------------------------------
 
-    def __exit__ ( self ):
+    def __exit__ ( self, *args ):
 
-        self.mentionThread.terminate ()
+        self._stopEvent.set ()
 
     #------------------------------------------------------------------------
 

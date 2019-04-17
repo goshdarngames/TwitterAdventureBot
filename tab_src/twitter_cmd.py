@@ -15,11 +15,16 @@ def cmd_loop ( tc ):
 
             print ( id_list )
 
+        if text == "q":
+             
+            break
+
         else:
 
             print ( "Command not recognized.  Valid commands :\n" +
                     "t [message]   - send a tweet\n"              +
-                    "m             - get mentionszn" )
+                    "m             - get mentionszn\n"
+                    "q             - quit" )
                      
 
 def main ():
@@ -27,6 +32,7 @@ def main ():
     with TwitterConnection () as tc:
 
         cmd_loop ( tc )
+
 
 if __name__ == "__main__" :
 
