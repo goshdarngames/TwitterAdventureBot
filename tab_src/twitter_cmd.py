@@ -1,6 +1,6 @@
 import sys
 
-from twitter_connection import *
+from twitter_connection import TwitterConnection
 
 
 def cmd_loop ( tc ):
@@ -15,9 +15,15 @@ def cmd_loop ( tc ):
 
             print ( id_list )
 
-        if text == "q":
+        elif text == "q":
              
             break
+
+        elif text == "m":
+
+            print ( "Mentions:" )
+
+            print ( tc.get_latest_mentions () )
 
         else:
 

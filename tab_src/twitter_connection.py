@@ -4,7 +4,7 @@
 # Provides a context manager that can be used to access Twitter
 #############################################################################
 
-import json, threading, queue
+import json, threading, queue, time
 
 import tweepy
 
@@ -33,7 +33,11 @@ def chop_text ( txt, n = 265 ):
 #----------------------------------------------------------------------------
 
 def check_mentions ( api, apiLock, mentionQ, stopEvent ):
-    pass
+    
+    while not stopEvent.is_set ():
+
+        time.sleep ( 0.1 )
+
 
 #----------------------------------------------------------------------------
 
@@ -73,6 +77,8 @@ class TwitterConnection:
         self.mentionThread.daemon = True
         self.mentionThread.start ()
 
+        return self
+
     #------------------------------------------------------------------------
 
     def __exit__ ( self, *args ):
@@ -98,5 +104,20 @@ class TwitterConnection:
 
         return msgIDs
 
+    #------------------------------------------------------------------------
 
+    def get_latest_mentions ( self, maxM = 100 ):
+
+        mentions = []
+
+        while len ( mentions ) < 100:
+
+            try:
+                m = self._mentionQ.get_nowait ()
+            except queue.Empty:
+                break
+            else:
+                mentions.append ( m )
+
+        return mentions
     
