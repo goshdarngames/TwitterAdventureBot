@@ -8,6 +8,12 @@ import json, threading, queue, time
 
 import tweepy
 
+#----------------------------------------------------------------------------
+
+CHECK_MENTION_SLEEP = 15
+
+#----------------------------------------------------------------------------
+
 def load_keys ():
 
     print ( "Loading keys..." )
@@ -36,7 +42,28 @@ def check_mentions ( api, apiLock, mentionQ, stopEvent ):
     
     while not stopEvent.is_set ():
 
-        time.sleep ( 0.1 )
+        mentions = []
+
+        with apiLock:
+
+            mentions = tweepy.Cursor ( 
+                    api.mentions_timeline,
+                    trim_user = True 
+                ).items ()
+
+        for mention in mentions:
+
+            #Create a dict containing only the desired data
+            mentionData = \
+                {
+                    "text" : mention.text,
+                    "id"   : mention.id,
+                    "user" : mention.user
+                }
+
+            mentionQ.put ( mention )
+
+        time.sleep ( CHECK_MENTION_SLEEP )
 
 
 #----------------------------------------------------------------------------
