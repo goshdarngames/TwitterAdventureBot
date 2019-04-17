@@ -69,8 +69,6 @@ def check_mentions ( api, apiLock, mentionQ, stopEvent ):
 
             if latestMention == None:
 
-                print ( "Checking mentions for the first time..." )
-
                 try:
 
                     latestMention = next ( mentions ).id
@@ -102,7 +100,6 @@ def check_mentions ( api, apiLock, mentionQ, stopEvent ):
 
         finally:
 
-            print ( "Mention sleep" )
             time.sleep ( CHECK_MENTION_SLEEP )
 
 
