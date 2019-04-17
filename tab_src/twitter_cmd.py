@@ -8,11 +8,21 @@ def main ():
 
     while True:
 
-        text = input ( "Tweet: " )
+        text = input ( "Twitter: " )
+        
+        if text [ : 2 ] == "t ":
 
-        id_list = tc.send_message_chain ( [ text ] )
+            id_list = tc.send_message_chain ( [ text [ 2 : ] ] )
 
-        print ( id_list )
+            print ( id_list )
+
+        else:
+
+            print ( "Command not recognized.  Valid commands :\n" +
+                    "t [message]   - send a tweet\n"              +
+                    "m             - get mentionszn" )
+                     
+                     
 
 if __name__ == "__main__" :
 

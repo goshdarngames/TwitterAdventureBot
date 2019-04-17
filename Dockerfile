@@ -57,5 +57,8 @@ USER tab
 
 #run the python file
 
-#ENTRYPOINT [ "python3", "twitter_cmd.py" ]
-ENTRYPOINT [ "python3", "tab.py" ]
+#These entry points are for testing modules with command line
+#ENTRYPOINT [ "python3", "frotz_cmd.py" ]
+ENTRYPOINT [ "python3", "twitter_cmd.py" ]
+
+#ENTRYPOINT [ "python3", "tab.py" ]
