@@ -32,6 +32,8 @@ def log_msg ( msg ):
 #----------------------------------------------------------------------------
 
 def cmd_from_text ( text ):
+
+    log_msg ( "cmd_from_text:\n"+text )
     
     if len ( text ) < 5:
         return None
@@ -80,47 +82,50 @@ def get_cmds_from_twitter ( tc, tcLock, cmdQ ):
 
         commands = []
 
+        firstRun = ( latestMentionID == None )
+
         with tcLock:
 
-            mentions =  tc.api.mentions_timeline ()
+            #on the first run only retrieve 1 metion since it would have
+            #been sent before the game started
+            numTweets = 1 if firstRun else None
+
+            mentions =  tc.api.mentions_timeline ( 
+                                    count     = numTweets,
+                                    since_id  = latestMentionID, 
+                                    trim_user = 1                )
 
         if len ( mentions ) == 0:
 
-            #set this so the next set of mentions aren't ignored
+            #no tweets were retrieved so set the latest ID to 0 so that
+            #firstRun will not be true on the next run
+
             latestMentionID = 0
 
             continue
 
-        #ignore the first batch of mentions as they may have been sent before
-        #the system started
 
-        if latestMentionID == None:
+        latestMentionID = mentions [ 0 ].id
 
-            latestMentionID = mentions [ 0 ].id
+        #ignore mentions that happened before the system started
+        if firstRun:
             continue
 
         for mention in mentions:
 
+            parsed_cmd = cmd_from_text ( mention.text )
 
-            if mention.id == latestMentionID:
+            if parsed_cmd == None:
+                continue
+            
+            command = { "cmd" : parsed_cmd }
 
-                break
+            log_msg ( "Command Received:" )
+            log_msg ( command )
 
-            else:
+            commands.append ( command )
 
-                parsed_cmd = cmd_from_text ( mention.text )
-
-                if parsed_cmd == None:
-                    continue
-                
-                command = { "cmd" : parsed_cmd }
-
-                log_msg ( "Command Received:" )
-                log_msg ( command )
-
-                commands.append ( command )
-
-                latestMentionID = mention.id
+            latestMentionID = mention.id
 
         if len ( commands > 0 ):
             cmdQ.put ( random.choice ( commands ) )
