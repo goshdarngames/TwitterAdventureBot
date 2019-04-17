@@ -2,9 +2,8 @@ import sys
 
 from twitter_connection import *
 
-def main ():
 
-    tc = TwitterConnection ()
+def cmd_loop ( tc ):
 
     while True:
 
@@ -22,7 +21,12 @@ def main ():
                     "t [message]   - send a tweet\n"              +
                     "m             - get mentionszn" )
                      
-                     
+
+def main ():
+
+    with TwitterConnection () as tc:
+
+        cmd_loop ( tc )
 
 if __name__ == "__main__" :
 
