@@ -12,6 +12,9 @@ import tweepy
 
 CHECK_MENTION_SLEEP = 15
 
+#How long to sleep after a tweep error message - usually a rate limit error
+TWEEP_ERROR_SLEEP = 15*60
+
 #----------------------------------------------------------------------------
 
 def load_keys ():
@@ -39,31 +42,68 @@ def chop_text ( txt, n = 265 ):
 #----------------------------------------------------------------------------
 
 def check_mentions ( api, apiLock, mentionQ, stopEvent ):
+
+    latestMention = None
     
     while not stopEvent.is_set ():
 
-        mentions = []
+        try:
+            with apiLock:
 
-        with apiLock:
+                mentions = tweepy.Cursor ( 
+                        api.mentions_timeline,
+                        trim_user = True,
+                        since_id  = latestMention 
+                    ).items ()
 
-            mentions = tweepy.Cursor ( 
-                    api.mentions_timeline,
-                    trim_user = True 
-                ).items ()
+        except TweepError as e:
+            
+            print ( e, file = sys.stderr )
 
-        for mention in mentions:
+            time.sleep ( TWEEP_ERROR_SLEEP )
 
-            #Create a dict containing only the desired data
-            mentionData = \
-                {
-                    "text" : mention.text,
-                    "id"   : mention.id,
-                    "user" : mention.user
-                }
+        else:
 
-            mentionQ.put ( mention )
+            #on firts call record latest mention in order to
+            #avoid mentions made before the system started
 
-        time.sleep ( CHECK_MENTION_SLEEP )
+            if latestMention == None:
+
+                print ( "Checking mentions for the first time..." )
+
+                try:
+
+                    latestMention = next ( mentions ).id
+
+                except StopIteration:
+                    
+                    latestMention = 0
+
+            
+            #Iterate through mentions as normal on future calls
+
+            else:
+
+                for mention in mentions:
+
+                    if mention.id > latestMention:
+
+                        latestMention = mention.id
+
+                    #Create a dict containing only the desired data
+                    mentionData = \
+                        {
+                            "text" : mention.text,
+                            "id"   : mention.id,
+                            "user" : mention.user
+                        }
+
+                    mentionQ.put ( mentionData )
+
+        finally:
+
+            print ( "Mention sleep" )
+            time.sleep ( CHECK_MENTION_SLEEP )
 
 
 #----------------------------------------------------------------------------
