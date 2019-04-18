@@ -159,8 +159,8 @@ class TwitterConnection:
 
             for chopped in chop_text ( msg ):
 
-                with self.apiLock:
-                    status = self.api.update_status ( chopped, replyID )
+                with self._apiLock:
+                    status = self._api.update_status ( chopped, replyID )
 
                 replyID = status.id
 
