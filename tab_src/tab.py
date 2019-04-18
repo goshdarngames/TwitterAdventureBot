@@ -59,8 +59,16 @@ def cmd_from_text ( text ):
 #----------------------------------------------------------------------------
 
 def check_mentions_for_cmd ( tc ):
+
+    cmd = None
+
+    for mention in tc.get_latest_mentions ():
+
+        parsedCmd = cmd_from_text ( mention [ "text" ] )
+
+        cmd = { "cmd" : parsedCmd }
     
-    return None
+    return cmd
 
 #----------------------------------------------------------------------------
 
@@ -105,7 +113,7 @@ def game_loop ( frotz, tc ):
 
             log_msg ( msg )
 
-            headerID = post_header_status ( tc, tcLock, msg )
+            headerID = post_header_status ( tc, msg )
 
             frotz.write_command ( command [ "cmd" ] + "\n" )
 
