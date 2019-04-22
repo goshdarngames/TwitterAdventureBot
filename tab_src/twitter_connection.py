@@ -44,6 +44,10 @@ def chop_text ( txt, n = 265 ):
 #----------------------------------------------------------------------------
 
 def check_mentions ( api, apiLock, mentionQ, stopEvent ):
+    """
+    This function is run by a thread in order to periodically check
+    twitter for mentions.
+    """
 
     latestMention = None
     
