@@ -31,7 +31,7 @@ def test_chop_text ():
         {
             "txt" : "",
             "n"   : 2,
-            "out" : [ ]
+            "out" : []
         }
 
     ]
@@ -43,11 +43,33 @@ def test_chop_text ():
         #check that the output ( list of strings ) is equal to the output
         #expected in the test case
 
-        assert ( len ( out ) == len ( tc [ "out" ] ) )
+        assert ( len ( out ) == len ( tc [ "out" ] ) ), tc
 
         for i in range ( len ( out ) ):
 
-            assert ( out [ i ] == tc [ "out" ] [ i ] )
+            assert ( out [ i ] == tc [ "out" ] [ i ] ), tc
 
-def pack_messages_test ():
-    pass
+#----------------------------------------------------------------------------
+
+def test_pack_messages ():
+    
+    testCases = \
+    [
+        {
+            "txt" : [ "abc" ],
+            "out" : [ "abc" ],
+            "n"   : 45
+        }
+
+    ]
+
+    for tc in testCases:
+
+        out = pack_messages ( tc [ "txt" ], tc [ "n" ] )
+
+        assert ( len ( out ) == len ( tc [ "out" ] ) ), tc
+
+        for i in range ( len ( out ) ):
+
+            assert ( out [ i ] == tc [ "out" ] [ i ] ), tc
+
