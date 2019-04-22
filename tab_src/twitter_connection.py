@@ -51,7 +51,20 @@ def pack_messages ( msgList, size = 265 ):
 
             #empty strings occur when there is a double space in the text
             if word == '':
-                word = " "
+
+                spaces = " "
+
+                #add an extra space for each consecutive empty word
+                
+                while msgSplit [ -1 ] == '':
+
+                    spaces += " "
+
+                    msgSplit.pop ()
+
+                #change the word to the spaces plus one extra to make it
+                #a double space
+                word = spaces + " "
 
             #call chop_text just for the rare case that the word is too
             #long for a single tweet
