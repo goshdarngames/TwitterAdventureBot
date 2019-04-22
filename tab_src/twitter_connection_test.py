@@ -14,7 +14,20 @@ def test_chop_text ():
             "txt" : "aabbccdd",
             "n"   : 2,
             "out" : [ "aa", "bb", "cc", "dd" ]
+        },
+
+        {
+            "txt" : "aabbccdd",
+            "n"   : 18,
+            "out" : [ "aabbccdd" ]
+        },
+
+        {
+            "txt" : "",
+            "n"   : 2,
+            "out" : [ ]
         }
+
     ]
 
     for tc in testCases:
