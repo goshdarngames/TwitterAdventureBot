@@ -89,6 +89,18 @@ def test_pack_messages ():
             "txt" : [ "abc    def" ],
             "out" : [ "abc    def"],
             "n"   : 15
+        },
+
+        {
+            "txt" : [ "abc.  def" ],
+            "out" : [ "abc.  def"],
+            "n"   : 15
+        },
+
+        {
+            "txt" : [ "abc.  def" ],
+            "out" : [ "abc.", "def"],
+            "n"   : 4
         }
 
     ]
