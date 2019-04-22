@@ -49,4 +49,5 @@ def test_chop_text ():
 
             assert ( out [ i ] == tc [ "out" ] [ i ] )
 
-
+def pack_messages_test ():
+    pass

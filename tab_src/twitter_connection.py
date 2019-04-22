@@ -29,6 +29,20 @@ def load_keys ():
 
 #----------------------------------------------------------------------------
 
+def pack_messages ( msgList ):
+    """
+    Packs a list of strings into as few tweet messages as possible.
+
+    Splits the msgList up into words so that words will not be split
+    across tweets.
+
+    Returns a list of strings that can be sent as tweets.
+    """
+
+    pass
+
+#----------------------------------------------------------------------------
+
 def chop_text ( txt, n = 265 ):
 
     """
