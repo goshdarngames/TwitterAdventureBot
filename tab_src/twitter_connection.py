@@ -35,6 +35,8 @@ def chop_text ( txt, n = 265 ):
     Chops a string into a list of strings of n length.
     """
 
+    assert ( n > 0 )
+
     #thanks stack overflow...
 
     return [ txt [ i : i + n ] for i in range ( 0, len ( txt ), n ) ]
