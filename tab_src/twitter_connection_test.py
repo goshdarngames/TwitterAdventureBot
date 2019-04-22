@@ -23,6 +23,12 @@ def test_chop_text ():
         },
 
         {
+            "txt" : "aabbccdd",
+            "n"   : 8,
+            "out" : [ "aabbccdd" ]
+        },
+
+        {
             "txt" : "",
             "n"   : 2,
             "out" : [ ]
