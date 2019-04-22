@@ -29,7 +29,7 @@ def load_keys ():
 
 #----------------------------------------------------------------------------
 
-def pack_messages ( msgList ):
+def pack_messages ( msgList, size = 265 ):
     """
     Packs a list of strings into as few tweet messages as possible.
 
@@ -39,7 +39,62 @@ def pack_messages ( msgList ):
     Returns a list of strings that can be sent as tweets.
     """
 
-    pass
+    assert size > 0
+
+    words = []
+
+    for msg in msgList:
+
+        msgSplit = msg.split ( ' ' )
+
+        for word in msgSplit:
+
+            #empty strings occur when there is a double space in the text
+            if word == '':
+                word = " "
+
+            #call chop_text just for the rare case that the word is too
+            #long for a single tweet
+            chopped = chop_text ( word, size )
+
+            #add new words to the head of the list so that the list
+            #will be in reverse order
+            words = [ *reversed ( chopped ), *words ]
+
+    tweets = []
+
+    currentTweet = ""
+
+    while len ( words ) > 0:
+
+        #Since the list is in reverse order pop is used to process the items
+        word = words.pop ()
+
+        #first word of the tweet
+        if len ( currentTweet ) == 0:
+
+            currentTweet = word
+
+        #if the word fits add it with a space
+        elif len ( currentTweet ) + len ( word ) < size:
+
+            currentTweet += " "+word
+
+        #not enough room for the word in current tweet
+        else:
+
+            tweets.append ( currentTweet )
+
+            currentTweet = word
+
+        #last word in the list
+        if len ( words ) == 0:
+
+            tweets.append ( currentTweet )
+
+    return tweets
+
+
 
 #----------------------------------------------------------------------------
 

@@ -59,6 +59,36 @@ def test_pack_messages ():
             "txt" : [ "abc" ],
             "out" : [ "abc" ],
             "n"   : 45
+        },
+
+        {
+            "txt" : [ "abc", "def" ],
+            "out" : [ "abc def" ],
+            "n"   : 45
+        },
+
+        {
+            "txt" : [ "abc", "def" ],
+            "out" : [ "abc", "def" ],
+            "n"   : 3
+        },
+
+        {
+            "txt" : [ "abc", "def" ],
+            "out" : [ "ab", "c", "de", "f" ],
+            "n"   : 2
+        },
+
+        {
+            "txt" : [ "abc  def" ],
+            "out" : [ "abc  def"],
+            "n"   : 15
+        },
+
+        {
+            "txt" : [ "abc    def" ],
+            "out" : [ "abc    def"],
+            "n"   : 15
         }
 
     ]
@@ -71,5 +101,5 @@ def test_pack_messages ():
 
         for i in range ( len ( out ) ):
 
-            assert ( out [ i ] == tc [ "out" ] [ i ] ), tc
+            assert ( out [ i ] == tc [ "out" ] [ i ] ), ( tc, out )
 
