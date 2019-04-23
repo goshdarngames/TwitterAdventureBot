@@ -43,36 +43,31 @@ def pack_messages ( msgList, size = 265 ):
 
     words = []
 
-    for msg in msgList:
+    #Loop through all of the messages in order to combine them into a
+    #single list of words - Note:  Spaces are inserted into the words list
+    #as words to simplify the process of re-combining them
 
-        msgSplit = msg.split ( ' ' )
+    msg = " ".join ( msgList )
 
-        for word in msgSplit:
 
-            #empty strings occur when there is a double space in the text
-            if word == '':
+    msgSplit = msg.split ( ' ' )
 
-                spaces = " "
+    while len ( msgSplit ) > 0:
 
-                #add an extra space for each consecutive empty word
-                
-                while msgSplit [ -1 ] == '':
+        word = msgSplit.pop ()
 
-                    spaces += " "
+        #call chop_text just for the rare case that the word is too
+        #long for a single tweet
+        chopped = chop_text ( word, size )
 
-                    msgSplit.pop ()
 
-                #change the word to the spaces plus one extra to make it
-                #a double space
-                word = spaces + " "
+        # Need to reverse the chopped list in case the word was split
+        # since the next phase expects the list in reverse order
+        words = [ *words, *reversed ( chopped ) ]
 
-            #call chop_text just for the rare case that the word is too
-            #long for a single tweet
-            chopped = chop_text ( word, size )
+        if len ( msgSplit ) > 0:
 
-            #add new words to the head of the list so that the list
-            #will be in reverse order
-            words = [ *reversed ( chopped ), *words ]
+            words.append ( " " )
 
     tweets = []
 
@@ -83,15 +78,11 @@ def pack_messages ( msgList, size = 265 ):
         #Since the list is in reverse order pop is used to process the items
         word = words.pop ()
 
-        #first word of the tweet
-        if len ( currentTweet ) == 0:
+        #if the word fits add it - special case for first word
+        if len ( currentTweet ) + len ( word ) < size or \
+           currentTweet == "":
 
-            currentTweet = word
-
-        #if the word fits add it with a space
-        elif len ( currentTweet ) + len ( word ) < size:
-
-            currentTweet += " "+word
+            currentTweet += word
 
         #not enough room for the word in current tweet
         else:
@@ -100,10 +91,14 @@ def pack_messages ( msgList, size = 265 ):
 
             currentTweet = word
 
-        #last word in the list
+        #last word in the list append the word so far
         if len ( words ) == 0:
 
             tweets.append ( currentTweet )
+
+    #remove any tweets that are just spaces
+
+    tweets = [ x for x in tweets if x.strip () != '' ]
 
     return tweets
 
