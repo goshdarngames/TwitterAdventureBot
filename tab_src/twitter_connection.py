@@ -238,16 +238,16 @@ class TwitterConnection:
 
         msgIDs = []
 
-        for msg in msgList:
+        packedMsgList = pack_messages ( msgList )
 
-            for chopped in chop_text ( msg ):
+        for msg in packedMsgList:
 
-                with self._apiLock:
-                    status = self._api.update_status ( chopped, replyID )
+            with self._apiLock:
+                status = self._api.update_status ( msg, replyID )
 
-                replyID = status.id
+            replyID = status.id
 
-                msgIDs.append ( replyID )
+            msgIDs.append ( replyID )
 
         return msgIDs
 
