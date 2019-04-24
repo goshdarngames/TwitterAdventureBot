@@ -111,7 +111,7 @@ def game_loop ( frotz, tc ):
 
         if exitCode != None:
 
-            log_msg ( "Frotz process exited.  Exit code: "+exitCode )
+            log_msg ( "Frotz process exited.  Exit code: "+str ( exitCode ) )
 
             break
 
