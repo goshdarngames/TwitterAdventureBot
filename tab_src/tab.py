@@ -44,9 +44,16 @@ def cmd_from_text ( text ):
         #strip before checking for 'cmd' in case the user put spaces
         line = line.strip ()
 
+        #if the first word is a username then process the rest of the line
+        #after the first word
+
+        if len( line ) > 0 and line [ 0 ] == "@":
+
+            line = line.split ( " ", 1 ) [ 1 ].strip ()
+
         #check for cmd and return the rest of the command
 
-        if line [ : 4 ] == "cmd ":
+        if len ( line ) > 4 and line [ : 4 ] == "cmd ":
 
             cmd = line [ 4 : ]
 
@@ -66,7 +73,8 @@ def check_mentions_for_cmd ( tc ):
 
         parsedCmd = cmd_from_text ( mention [ "text" ] )
 
-        cmd = { "cmd" : parsedCmd }
+        if parsedCmd != None:
+            cmd = { "cmd" : parsedCmd }
     
     return cmd
 
@@ -96,6 +104,16 @@ def game_loop ( frotz, tc ):
     headerID = post_header_status ( tc, "Starting Adventure" )
 
     while True:
+
+        #break loop if frotz process has halted
+
+        exitCode = frotz.poll ()
+
+        if exitCode != None:
+
+            log_msg ( "Frotz process exited.  Exit code: "+exitCode )
+
+            break
 
         #if a commmand is due to be sent then send it and change the 
         #header so later output is posted as a reply
@@ -145,14 +163,16 @@ def main ():
     log_msg ( "Creating Twitter Connection" )
 
     with TwitterConnection () as tc:
-    
-        log_msg ( "Starting frotz" )
 
-        with FrotzRunner ( "z8/advent.z8" ) as frotz:
+        while True:
+        
+            log_msg ( "Starting frotz" )
 
-            log_msg ( "Entering game loop." )
+            with FrotzRunner ( "z8/advent.z8" ) as frotz:
 
-            game_loop ( frotz, tc )
+                log_msg ( "Entering game loop." )
+
+                game_loop ( frotz, tc )
 
 
 

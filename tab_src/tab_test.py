@@ -17,6 +17,21 @@ def test_cmd_from_text ():
         },
 
         { 
+            "text" : "banana cmd lets go",
+            "cmd"  : None
+        },
+
+        { 
+            "text" : "cmd ",
+            "cmd"  : None
+        },
+
+        { 
+            "text" : "nothing here",
+            "cmd"  : None
+        },
+
+        { 
             "text" : "cmd      test text ",
             "cmd"  : "test text"
         },
@@ -34,11 +49,17 @@ def test_cmd_from_text ():
         { 
             "text" : "cmd abc xyz",
             "cmd"  : "abc xyz"
+        },
+
+        { 
+            "text" : "@tweetintfict cmd abc xyz",
+            "cmd"  : "abc xyz"
         }
 
     ]
 
     for test in testCases:
 
-        assert ( tab.cmd_from_text ( test [ "text" ] ) == test [ "cmd" ] )
+        assert ( tab.cmd_from_text ( test [ "text" ] ) == test [ "cmd" ] ), \
+                test
 
