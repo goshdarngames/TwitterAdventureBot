@@ -51,6 +51,10 @@ def cmd_from_text ( text, bannedCmds ):
 
             line = line.split ( " ", 1 ) [ 1 ].strip ()
 
+        #convert to lower case
+
+        line = line.lower ()
+
         #check for cmd and return the rest of the command
 
         if len ( line ) > 4 and line [ : 4 ] == "cmd ":

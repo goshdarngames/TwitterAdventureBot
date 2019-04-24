@@ -79,7 +79,17 @@ def test_cmd_from_text ():
         { 
             "text" : "cmd stuff quit",
             "cmd"  : "stuff quit"
-        }
+        },
+
+        { 
+            "text" : "CMD comm",
+            "cmd"  : "comm"
+        },
+
+        { 
+            "text" : "CmD comm aaBBccDDee",
+            "cmd"  : "comm aabbccddee"
+        },
 
     ]
 
