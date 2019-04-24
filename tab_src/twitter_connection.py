@@ -135,7 +135,6 @@ def check_mentions ( api, apiLock, mentionQ, stopEvent ):
 
                 mentions = tweepy.Cursor ( 
                         api.mentions_timeline,
-                        trim_user = True,
                         since_id  = latestMention 
                     ).items ()
 
@@ -174,9 +173,9 @@ def check_mentions ( api, apiLock, mentionQ, stopEvent ):
                     #Create a dict containing only the desired data
                     mentionData = \
                         {
-                            "text" : mention.text,
-                            "id"   : mention.id,
-                            "user" : mention.user
+                            "text"     : mention.text,
+                            "id"       : mention.id,
+                            "username" : mention.user.name
                         }
 
                     mentionQ.put ( mentionData )

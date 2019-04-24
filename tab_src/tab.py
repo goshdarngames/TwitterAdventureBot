@@ -86,7 +86,7 @@ def check_mentions_for_cmd ( tc, bannedCmds ):
         parsedCmd = cmd_from_text ( mention [ "text" ], bannedCmds )
 
         if parsedCmd != None:
-            cmd = { "cmd" : parsedCmd }
+            cmd = { "cmd" : parsedCmd, "username" : mention [ "username" ] }
     
     return cmd
 
@@ -139,7 +139,8 @@ def game_loop ( frotz, tc, bannedCmds ):
             #Expect commands from the command queue to be dictionary
             #objects with the form { user : user.id, cmd : "..." }
 
-            msg = "Sending Command: "+command [ "cmd" ]
+            msg =  "Sending Command: " + command [ "cmd" ] + "\n\n"
+            msg += "From: @" + command [ "username" ]
 
             log_msg ( msg )
 
