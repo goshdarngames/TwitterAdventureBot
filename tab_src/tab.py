@@ -101,10 +101,8 @@ def post_header_status ( tc, text ):
 
     #This was used to make sure that every command was unique to stop them
     #getting blocked by the twitter api but it may not be needed any more
-    #unique = str ( uuid.uuid4 () )[:8]
-    #text += "\n\n"+unique
-
-    text += "\n\n#InteractiveFiction #TwitterBot #TwitterGame"
+    unique = str ( uuid.uuid4 () )[:8]
+    text += "\n\n"+unique
 
     headerID = tc.send_message_chain ( [ text ] ) [ 0 ]
 
@@ -116,7 +114,11 @@ def game_loop ( frotz, tc, bannedCmds ):
 
     #The headerID holds the ID of the message that the next piece of 
     #output should reply to
-    headerID = post_header_status ( tc, "Starting Adventure" )
+   
+    startText  = "Starting Adventure..."
+    startText += "\n\n#InteractiveFiction #TwitterBot #TwitterGame"
+    
+    headerID = post_header_status ( tc, startText )
 
     while True:
 
