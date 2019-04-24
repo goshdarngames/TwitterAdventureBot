@@ -54,12 +54,40 @@ def test_cmd_from_text ():
         { 
             "text" : "@tweetintfict cmd abc xyz",
             "cmd"  : "abc xyz"
+        },
+
+        { 
+            "text" : "cmd quit",
+            "cmd"  : None
+        },
+
+        { 
+            "text" : "stuff\ncmd quit\nmorestuff",
+            "cmd"  : None
+        },
+
+        { 
+            "text" : "cmd quit and other stuff",
+            "cmd"  : None
+        },
+
+        { 
+            "text" : "cmd quite",
+            "cmd"  : "quite"
+        },
+
+        { 
+            "text" : "cmd stuff quit",
+            "cmd"  : "stuff quit"
         }
 
     ]
 
     for test in testCases:
 
-        assert ( tab.cmd_from_text ( test [ "text" ] ) == test [ "cmd" ] ), \
-                test
+        bannedCmds = [ "quit" ]
+
+        output = tab.cmd_from_text ( test [ "text" ], bannedCmds ) 
+
+        assert ( output == test [ "cmd" ] ),  test  #output testcase on fail
 

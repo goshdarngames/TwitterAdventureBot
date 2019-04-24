@@ -28,7 +28,7 @@ def log_msg ( msg ):
 
 #----------------------------------------------------------------------------
 
-def cmd_from_text ( text ):
+def cmd_from_text ( text, bannedCmds ):
 
     log_msg ( "cmd_from_text:\n"+text )
     
@@ -59,19 +59,27 @@ def cmd_from_text ( text ):
 
             cmd = cmd.strip ()
 
-            #NOTE: command/profanity filter goes here
+            #check the command's first word against the banned commands
+
+            firstWord = cmd.split ( " " ) [ 0 ]
+
+            for banned in bannedCmds:
+
+                if firstWord == banned:
+
+                    return None
 
     return cmd 
 
 #----------------------------------------------------------------------------
 
-def check_mentions_for_cmd ( tc ):
+def check_mentions_for_cmd ( tc, bannedCmds ):
 
     cmd = None
 
     for mention in tc.get_latest_mentions ():
 
-        parsedCmd = cmd_from_text ( mention [ "text" ] )
+        parsedCmd = cmd_from_text ( mention [ "text" ], bannedCmds )
 
         if parsedCmd != None:
             cmd = { "cmd" : parsedCmd }
@@ -97,7 +105,7 @@ def post_header_status ( tc, text ):
 
 #----------------------------------------------------------------------------
     
-def game_loop ( frotz, tc ):
+def game_loop ( frotz, tc, bannedCmds ):
 
     #The headerID holds the ID of the message that the next piece of 
     #output should reply to
@@ -118,7 +126,7 @@ def game_loop ( frotz, tc ):
         #if a commmand is due to be sent then send it and change the 
         #header so later output is posted as a reply
         
-        command = check_mentions_for_cmd ( tc )
+        command = check_mentions_for_cmd ( tc, bannedCmds )
 
         if command != None:
 
@@ -162,6 +170,12 @@ def main ():
 
     log_msg ( "Creating Twitter Connection" )
 
+    #List of commands that will be ignored rather than sent to the game
+    #If more words are to be added to this list it would be a good idea
+    #to put them in a text file and load them
+
+    bannedCmds = [ "quit" ]
+
     with TwitterConnection () as tc:
 
         while True:
@@ -172,7 +186,7 @@ def main ():
 
                 log_msg ( "Entering game loop." )
 
-                game_loop ( frotz, tc )
+                game_loop ( frotz, tc, bannedCmds )
 
 
 
