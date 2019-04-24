@@ -91,6 +91,16 @@ def test_cmd_from_text ():
             "cmd"  : "comm aabbccddee"
         },
 
+        { 
+            "text" : "cmd one cmd two",
+            "cmd"  : "one cmd two"
+        },
+
+        { 
+            "text" : "cmd one \ncmd two",
+            "cmd"  : "one"
+        },
+
     ]
 
     for test in testCases:

@@ -73,6 +73,9 @@ def cmd_from_text ( text, bannedCmds ):
 
                     return None
 
+            #only parse the first command
+            break
+
     return cmd 
 
 #----------------------------------------------------------------------------
