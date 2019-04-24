@@ -99,9 +99,12 @@ def post_header_status ( tc, text ):
     sometimes tweepy will block repeated messages.
     """
 
-    unique = str ( uuid.uuid4 () )[:8]
+    #This was used to make sure that every command was unique to stop them
+    #getting blocked by the twitter api but it may not be needed any more
+    #unique = str ( uuid.uuid4 () )[:8]
+    #text += "\n\n"+unique
 
-    text += "\n\n"+unique
+    text += "\n\n#InteractiveFiction #TwitterBot #TwitterGame"
 
     headerID = tc.send_message_chain ( [ text ] ) [ 0 ]
 
