@@ -176,7 +176,7 @@ def check_mentions ( api, apiLock, mentionQ, stopEvent ):
                         {
                             "text"     : mention.text,
                             "id"       : mention.id,
-                            "username" : mention.user.name
+                            "username" : mention.user.screen_name
                         }
 
                     mentionQ.put ( mentionData )
