@@ -4,14 +4,14 @@
 # Provides a context manager that can be used to access Twitter
 #############################################################################
 
-import json, threading, queue, time
+import json, threading, queue, time, logging
 
 import tweepy
 
 #----------------------------------------------------------------------------
 
 #How long to sleep between checking mentions
-CHECK_MENTION_SLEEP = 3*60
+CHECK_MENTION_SLEEP = 5*60
 
 #How long to sleep after a tweep error message - usually a rate limit error
 TWEEP_ERROR_SLEEP = 15*60
@@ -20,7 +20,7 @@ TWEEP_ERROR_SLEEP = 15*60
 
 def load_keys ():
 
-    print ( "Loading keys..." )
+    logging.info ( "Loading keys..." )
 
     with open ( "twitter_keys.json" ) as json_data_file :
 
@@ -141,7 +141,7 @@ def check_mentions ( api, apiLock, mentionQ, stopEvent ):
 
         except TweepError as e:
             
-            print ( e, file = sys.stderr )
+            logging.critical ( e )
 
             time.sleep ( TWEEP_ERROR_SLEEP )
 
@@ -242,8 +242,18 @@ class TwitterConnection:
 
         for msg in packedMsgList:
 
-            with self._apiLock:
-                status = self._api.update_status ( msg, replyID )
+            status = None
+
+            while status == None:
+                try:
+                    with self._apiLock:
+                        status = self._api.update_status ( msg, replyID )
+
+                except TweepError as e:
+                    
+                    logging.critical ( e )
+
+                    time.sleep ( TWEEP_ERROR_SLEEP )
 
             replyID = status.id
 

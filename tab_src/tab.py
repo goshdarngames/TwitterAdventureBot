@@ -7,7 +7,7 @@
 # through twitter comments.
 #############################################################################
 
-import sys, time, uuid, random
+import sys, time, uuid, random, logging
 
 from queue import Queue, Empty
 from threading import Thread, Lock
@@ -22,15 +22,9 @@ GAME_LOOP_SLEEP = 1
 
 #----------------------------------------------------------------------------
 
-def log_msg ( msg ):
-
-    print ( msg, flush = True )
-
-#----------------------------------------------------------------------------
-
 def cmd_from_text ( text, bannedCmds ):
 
-    log_msg ( "cmd_from_text:\n"+text )
+    logging.info ( "cmd_from_text:\n"+text )
     
     if len ( text ) < 5:
         return None
@@ -131,7 +125,7 @@ def game_loop ( frotz, tc, bannedCmds ):
 
         if exitCode != None:
 
-            log_msg ( "Frotz process exited.  Exit code: "+str ( exitCode ) )
+            logging.info ( "Frotz process exited.  Exit code: "+str ( exitCode ) )
 
             break
 
@@ -142,7 +136,7 @@ def game_loop ( frotz, tc, bannedCmds ):
 
         if command != None:
 
-            log_msg ( "Command:" )
+            logging.info ( "Command:" )
 
             #Expect commands from the command queue to be dictionary
             #objects with the form { user : user.id, cmd : "..." }
@@ -150,7 +144,7 @@ def game_loop ( frotz, tc, bannedCmds ):
             msg =  "Sending Command: " + command [ "cmd" ] + "\n\n"
             msg += "From: @" + command [ "username" ]
 
-            log_msg ( msg )
+            logging.info ( msg )
 
             headerID = post_header_status ( tc, msg )
 
@@ -165,7 +159,7 @@ def game_loop ( frotz, tc, bannedCmds ):
         if len ( output ) > 0:
             
             consoleMsg = "Sending output:\n" + "\n".join( output )
-            log_msg ( consoleMsg )
+            logging.info ( consoleMsg )
             
             #record the last message sent so that the next output will be
             #sent as a reply
@@ -177,11 +171,14 @@ def game_loop ( frotz, tc, bannedCmds ):
 #----------------------------------------------------------------------------
 
 def main ():
+
+    logging.basicConfig ( format='%(asctime)s - %(levelname)s - %(message)s', 
+                          level=logging.INFO )
     
-    log_msg ( "Twitter Adventure Bot" )
+    logging.info ( "Twitter Adventure Bot" )
 
 
-    log_msg ( "Creating Twitter Connection" )
+    logging.info ( "Creating Twitter Connection" )
 
     #List of commands that will be ignored rather than sent to the game
     #If more words are to be added to this list it would be a good idea
@@ -193,11 +190,11 @@ def main ():
 
         while True:
         
-            log_msg ( "Starting frotz" )
+            logging.info ( "Starting frotz" )
 
             with FrotzRunner ( "z8/advent.z8" ) as frotz:
 
-                log_msg ( "Entering game loop." )
+                logging.info ( "Entering game loop." )
 
                 game_loop ( frotz, tc, bannedCmds )
 
