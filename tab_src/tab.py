@@ -119,7 +119,7 @@ def game_loop ( frotz, tc, bannedCmds ):
     #output should reply to
    
     startText  = "Starting Adventure..."
-    startText += "\n\n#InteractiveFiction #TwitterBot #TwitterGame"
+    #startText += "\n\n#InteractiveFiction #TwitterBot #TwitterGame"
     
     headerID = post_header_status ( tc, startText )
 
