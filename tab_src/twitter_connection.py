@@ -11,7 +11,7 @@ import tweepy
 #----------------------------------------------------------------------------
 
 #How long to sleep between checking mentions
-CHECK_MENTION_SLEEP = 60
+CHECK_MENTION_SLEEP = 3*60
 
 #How long to sleep after a tweep error message - usually a rate limit error
 TWEEP_ERROR_SLEEP = 15*60
@@ -200,7 +200,7 @@ class TwitterConnection:
 
         auth.set_access_token (
                 keys [ "access_token" ],
-                keys [ "access_token_secret"] )
+                keys [ "access_token_secret" ] )
 
         self._api = tweepy.API ( auth )
 
