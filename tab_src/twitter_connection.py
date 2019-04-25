@@ -127,6 +127,8 @@ def check_mentions ( api, apiLock, mentionQ, stopEvent ):
     twitter for mentions.
     """
 
+    logging.info ( "Checking mentions." )
+
     latestMention = None
     
     while not stopEvent.is_set ():
