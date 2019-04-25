@@ -11,10 +11,10 @@ import tweepy
 #----------------------------------------------------------------------------
 
 #How long to sleep between checking mentions
-CHECK_MENTION_SLEEP = 5*60
+CHECK_MENTION_SLEEP = 4*60
 
 #How long to sleep after a tweep error message - usually a rate limit error
-TWEEP_ERROR_SLEEP = 15*60
+TWEEP_ERROR_SLEEP = 20*60
 
 #----------------------------------------------------------------------------
 
