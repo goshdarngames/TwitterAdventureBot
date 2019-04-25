@@ -244,7 +244,10 @@ class TwitterConnection:
 
             status = None
 
+            logging.info ( "Sending Message: "+msg )
+
             while status == None:
+
                 try:
                     with self._apiLock:
                         status = self._api.update_status ( msg, replyID )
@@ -255,9 +258,11 @@ class TwitterConnection:
 
                     time.sleep ( TWEEP_ERROR_SLEEP )
 
-            replyID = status.id
+                else:
 
-            msgIDs.append ( replyID )
+                    replyID = status.id
+
+                    msgIDs.append ( replyID )
 
         return msgIDs
 
