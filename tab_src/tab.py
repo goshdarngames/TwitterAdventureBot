@@ -170,10 +170,26 @@ def game_loop ( frotz, tc, bannedCmds ):
 
 #----------------------------------------------------------------------------
 
+def handle_excpetions ( excType, excValue, excTraceback ):
+    """
+    Used to log uncaught exceptions."
+    """
+
+    if issubclass ( excType, KeyboardInterrupt ):
+
+        sys.__excepthook__ ( excType, excValue, excTraceback )
+        return
+
+    logger.critical ( "Unhandled Exception", 
+                      excInfo = ( excType, excValue, excTraceback ) )
+#----------------------------------------------------------------------------
+
 def main ():
 
     logging.basicConfig ( format='%(asctime)s - %(levelname)s - %(message)s', 
                           level=logging.INFO )
+
+    sys.excepthook = handle_exceptions
     
     logging.info ( "Twitter Adventure Bot" )
 
