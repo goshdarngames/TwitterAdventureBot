@@ -258,6 +258,7 @@ class TwitterConnection:
 
             logging.info ( "Sending Message: "+msg )
 
+            #Use a loop to send message in order to retry on rate limit
             while status == None:
 
                 try:
@@ -280,7 +281,7 @@ class TwitterConnection:
 
                     logging.critical ( e )
 
-                    return None
+                    break
 
                 else:
 

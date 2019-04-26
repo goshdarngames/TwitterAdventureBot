@@ -89,11 +89,50 @@ def check_mentions_for_cmd ( tc, bannedCmds ):
 
 #----------------------------------------------------------------------------
 
+def post_status ( tc, text. replyID ):
+    """
+    Posts a message to twitter and returns a list of the status IDs that
+    hold the message.  (The message will be split up into multiple 
+    messages when sent to Twitter)
+    """
+
+    messageChain = tc.send_message_chain ( [ text ], replyID )
+
+    if len ( messageChain ) == 0:
+
+        logging.critical ( "Failed to send tweet:\n"+text )
+
+    return messageChain
+
+#----------------------------------------------------------------------------
+
+def post_tail_status ( tc, text, replyID ):
+    """
+    Posts a message in reply to another status and returns the ID of the 
+    final message in the chain.
+
+    Used to add messages onto an existing chain of messages.
+    """
+
+    messageChain = post_status ( tc, text, replyID )
+
+    if len ( messageChain ) > 0:
+
+        return messageChain [ -1 ]
+
+    else:
+
+        return None
+
+#----------------------------------------------------------------------------
+
 def post_header_status ( tc, text ):
 
     """
-    Special method for posting headers with a unique number attached since
-    sometimes tweepy will block repeated messages.
+    Posts a chain of messages as a new thread and returns the ID of the
+    first message in the chain.
+
+    Used to start new threads e.g. when a new command is sent.
     """
 
     #This was used to make sure that every command was unique to stop them
@@ -101,9 +140,15 @@ def post_header_status ( tc, text ):
     unique = str ( uuid.uuid4 () )[:8]
     text += "\n\n"+unique
 
-    headerID = tc.send_message_chain ( [ text ] ) [ 0 ]
+    messageChain = post_status ( tc, text, None )
 
-    return headerID
+    if len ( messageChain ) > 0:
+
+        return messageChain [ 0 ]
+
+    else:
+
+        return None
 
 #----------------------------------------------------------------------------
     
@@ -125,7 +170,8 @@ def game_loop ( frotz, tc, bannedCmds ):
 
         if exitCode != None:
 
-            logging.info ( "Frotz process exited.  Exit code: "+str ( exitCode ) )
+            logging.warning ( "Frotz process exited.  "+
+                              "Exit code: "+str ( exitCode ) )
 
             break
 
@@ -163,7 +209,7 @@ def game_loop ( frotz, tc, bannedCmds ):
             
             #record the last message sent so that the next output will be
             #sent as a reply
-            outID = tc.send_message_chain ( output, outID ) [ -1 ]
+            outID = post_tail_status ( output, outID )
 
 
         time.sleep ( GAME_LOOP_SLEEP )
