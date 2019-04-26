@@ -86,6 +86,8 @@ def cmd_from_text ( text, bannedCmds ):
 
             if string_has_url ( cmd ):
 
+                logging.warning ( "Ignored command with URL:\n"+cmd )
+
                 return None
             
             #remove whitespace at beginning and end of command
