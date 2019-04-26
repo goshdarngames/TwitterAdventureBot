@@ -141,7 +141,7 @@ def check_mentions ( api, apiLock, mentionQ, stopEvent ):
                         since_id  = latestMention 
                     ).items ()
 
-        except TweepError as e:
+        except tweepy.TweepError as e:
             
             logging.critical ( e )
 
@@ -254,7 +254,7 @@ class TwitterConnection:
                     with self._apiLock:
                         status = self._api.update_status ( msg, replyID )
 
-                except TweepError as e:
+                except tweepy.TweepError as e:
                     
                     logging.critical ( e )
 
