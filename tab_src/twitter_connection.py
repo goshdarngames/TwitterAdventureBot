@@ -14,7 +14,7 @@ import tweepy
 CHECK_MENTION_SLEEP = 4*60
 
 #How long to sleep after a tweep error message - usually a rate limit error
-TWEEP_ERROR_SLEEP = 20*60
+TWEEP_RATE_ERROR_SLEEP = 20*60
 
 #----------------------------------------------------------------------------
 
@@ -141,11 +141,21 @@ def check_mentions ( api, apiLock, mentionQ, stopEvent ):
                         since_id  = latestMention 
                     ).items ()
 
+        except tweepy.RateLimitError:
+
+            logging.warning ( 
+                "check_mentions encountered Twitter API rate limit." )
+
+            logging.warning ( "Sleeping until next rate period." )
+
+            time.sleep ( TWEEP_RATE_ERROR_SLEEP )
+
         except tweepy.TweepError as e:
             
+            logging.critical ( "check_mentions chain API error:" )
+
             logging.critical ( e )
 
-            time.sleep ( TWEEP_ERROR_SLEEP )
 
         else:
 
@@ -254,11 +264,23 @@ class TwitterConnection:
                     with self._apiLock:
                         status = self._api.update_status ( msg, replyID )
 
+                except tweepy.RateLimitError:
+
+                    logging.warning ( 
+                        "Send message chain encountered Twitter API "+
+                        "rate limit." )
+
+                    logging.warning ( "Sleeping until next rate period." )
+
+                    time.sleep ( TWEEP_RATE_ERROR_SLEEP )
+
                 except tweepy.TweepError as e:
                     
+                    logging.critical ( "Send message chain API error:" )
+
                     logging.critical ( e )
 
-                    time.sleep ( TWEEP_ERROR_SLEEP )
+                    return None
 
                 else:
 
