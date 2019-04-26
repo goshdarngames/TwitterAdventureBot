@@ -101,6 +101,21 @@ def test_cmd_from_text ():
             "cmd"  : "one"
         },
 
+        { 
+            "text" : "cmd on!e tw\\o thr33 f@ur",
+            "cmd"  : "one two thr33 fur"
+        },
+
+        { 
+            "text" : "cmd on!e tw\\o thr33 f@ur\ncmd two",
+            "cmd"  : "one two thr33 fur"
+        },
+
+        { 
+            "text" : "cmd http://www.goshdarngames.com",
+            "cmd"  : None
+        },
+
     ]
 
     for test in testCases:

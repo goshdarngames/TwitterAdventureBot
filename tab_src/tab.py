@@ -9,6 +9,8 @@
 
 import sys, time, uuid, random, logging
 
+import urlmarker, re
+
 from queue import Queue, Empty
 from threading import Thread, Lock
 
@@ -19,6 +21,29 @@ from twitter_connection import TwitterConnection
 
 #How long to sleep at the end of each 'game loop'
 GAME_LOOP_SLEEP = 1
+
+#----------------------------------------------------------------------------
+
+def char_allowed_in_cmd ( c ):
+    """
+    Returns true if a character is allowed to be sent from a tweet to
+    the game.
+    """
+
+    return c.isalnum () or c == " "
+
+#----------------------------------------------------------------------------
+
+def string_has_url ( s ):
+    """
+    Returns true if a string seems like it contains a URL.
+
+    It is undesirable for the bot to send commands to the game that
+    contains a url.  The bot posts a message with the command text and
+    that could be abused to make the bot spam out URLs.
+    """
+
+    return len ( re.findall ( urlmarker.ANY_URL_REGEX, s ) ) > 0
 
 #----------------------------------------------------------------------------
 
@@ -53,9 +78,24 @@ def cmd_from_text ( text, bannedCmds ):
 
         if len ( line ) > 4 and line [ : 4 ] == "cmd ":
 
+            #The rest of the line after 'cmd '
             cmd = line [ 4 : ]
 
+            #block commands with urls - note that urls are allowed in 
+            #cmd tweets just not as part of the command
+
+            if string_has_url ( cmd ):
+
+                return None
+            
+            #remove whitespace at beginning and end of command
             cmd = cmd.strip ()
+
+            #only allow alpha-numeric and space characters
+
+            allowed_chars = [ x for x in cmd if char_allowed_in_cmd ( x ) ]
+
+            cmd = "".join ( allowed_chars )
 
             #check the command's first word against the banned commands
 
