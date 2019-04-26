@@ -89,32 +89,34 @@ def check_mentions_for_cmd ( tc, bannedCmds ):
 
 #----------------------------------------------------------------------------
 
-def post_status ( tc, text. replyID ):
+def post_status ( tc, msgList, replyID ):
     """
     Posts a message to twitter and returns a list of the status IDs that
     hold the message.  (The message will be split up into multiple 
     messages when sent to Twitter)
     """
 
-    messageChain = tc.send_message_chain ( [ text ], replyID )
+    messageChain = tc.send_message_chain ( msgList, replyID )
 
     if len ( messageChain ) == 0:
 
-        logging.critical ( "Failed to send tweet:\n"+text )
+        msgStr = "\n".join ( msgList )
+
+        logging.critical ( "Failed to send tweets:\n"+msgStr )
 
     return messageChain
 
 #----------------------------------------------------------------------------
 
-def post_tail_status ( tc, text, replyID ):
+def post_tail_status ( tc, msgList, replyID ):
     """
-    Posts a message in reply to another status and returns the ID of the 
-    final message in the chain.
+    Posts a list of messages in reply to another status and returns the ID 
+    of the final twitter status in the resulting chain.
 
     Used to add messages onto an existing chain of messages.
     """
 
-    messageChain = post_status ( tc, text, replyID )
+    messageChain = post_status ( tc, msgList, replyID )
 
     if len ( messageChain ) > 0:
 
@@ -129,8 +131,8 @@ def post_tail_status ( tc, text, replyID ):
 def post_header_status ( tc, text ):
 
     """
-    Posts a chain of messages as a new thread and returns the ID of the
-    first message in the chain.
+    Posts a message as the first message in a new thread and returns the ID 
+    of the first message in the chain.( Message may be split up by twitter )
 
     Used to start new threads e.g. when a new command is sent.
     """
@@ -140,7 +142,7 @@ def post_header_status ( tc, text ):
     unique = str ( uuid.uuid4 () )[:8]
     text += "\n\n"+unique
 
-    messageChain = post_status ( tc, text, None )
+    messageChain = post_status ( tc, [ text ], None )
 
     if len ( messageChain ) > 0:
 
@@ -209,7 +211,7 @@ def game_loop ( frotz, tc, bannedCmds ):
             
             #record the last message sent so that the next output will be
             #sent as a reply
-            outID = post_tail_status ( output, outID )
+            outID = post_tail_status ( tc, output, outID )
 
 
         time.sleep ( GAME_LOOP_SLEEP )
