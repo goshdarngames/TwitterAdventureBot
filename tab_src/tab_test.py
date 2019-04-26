@@ -116,6 +116,26 @@ def test_cmd_from_text ():
             "cmd"  : None
         },
 
+        { 
+            "text" : "cmd sneaky http://www.goshdarngames.com",
+            "cmd"  : None
+        },
+
+        { 
+            "text" : "cmd sneakierhttp://www.goshdarngames.com",
+            "cmd"  : None
+        },
+
+        { 
+            "text" : "cmd allowed \nhttp://www.goshdarngames.com",
+            "cmd"  : "allowed"
+        },
+
+        { 
+            "text" : "http://www.goshdarngames.com \ncmd allowed",
+            "cmd"  : "allowed"
+        },
+
     ]
 
     for test in testCases:
