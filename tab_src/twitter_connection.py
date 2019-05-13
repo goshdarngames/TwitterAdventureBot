@@ -11,7 +11,7 @@ import tweepy
 #----------------------------------------------------------------------------
 
 #Location of the twitter keys file.
-TWITTER_KEYS_PATH = "twitter_keys.json" 
+TWITTER_KEYS_PATH = os.path.join ( "config","twitter_keys.json" )
 
 #How long to sleep between checking mentions
 CHECK_MENTION_SLEEP = 4*60
