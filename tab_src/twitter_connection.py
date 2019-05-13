@@ -10,6 +10,9 @@ import tweepy
 
 #----------------------------------------------------------------------------
 
+#Location of the twitter keys file.
+TWITTER_KEYS_PATH = "twitter_keys.json" 
+
 #How long to sleep between checking mentions
 CHECK_MENTION_SLEEP = 4*60
 
@@ -22,7 +25,7 @@ def load_keys ():
 
     logging.info ( "Loading keys..." )
 
-    with open ( "twitter_keys.json" ) as json_data_file :
+    with open ( TWITTER_KEYS_PATH ) as json_data_file :
 
         data = json.load ( json_data_file ) 
 
