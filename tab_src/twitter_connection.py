@@ -4,7 +4,7 @@
 # Provides a context manager that can be used to access Twitter
 #############################################################################
 
-import json, threading, queue, time, logging
+import json, threading, queue, time, logging, os
 
 import tweepy
 
