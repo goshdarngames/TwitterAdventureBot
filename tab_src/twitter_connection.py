@@ -19,6 +19,40 @@ CHECK_MENTION_SLEEP = 4*60
 #How long to sleep after a tweep error message - usually a rate limit error
 TWEEP_RATE_ERROR_SLEEP = 20*60
 
+#how long to sleep after an API call is made
+TWITTER_ERROR_SLEEP = 20*60
+
+#----------------------------------------------------------------------------
+
+def call_twitter_api ( api_call, sleep_time ):
+    """
+    This function is used to encapsulate calls to the twitter function
+    so that logging and error handling can be contained in one place.
+
+    api_call - lambda function that can be called with 0 parameters to 
+               execute the desired function.
+
+    sleep_time - how long the function should sleep after calling the
+                 twitter API
+
+    The funcion will sleep extra time if an error occurs.
+    """
+
+    try:
+        api_call ()
+
+    except e:
+
+        logging.critical ( e )
+
+        time.sleep ( TWITTER_ERROR_SLEEP )
+
+    finally:
+
+        time.sleep ( sleep_time )
+
+
+
 #----------------------------------------------------------------------------
 
 def load_keys ():
