@@ -267,8 +267,8 @@ class TwitterConnection:
         This function is used to encapsulate calls to the twitter function
         so that logging and error handling can be contained in one place.
 
-        api_call - lambda function that can be called with 0 parameters to 
-                   execute the desired function.
+        api_call - lambda function that can be called with the _api object
+                   as a parameter to execute the desired twitter call
 
         sleep_time - how long the function should sleep after calling the
                      twitter API
@@ -277,7 +277,10 @@ class TwitterConnection:
         """
 
         try:
-            api_call ()
+
+            with self._apiLock:
+
+                api_call ( self._api )
 
         except ( Timeout, SSLError, ReadTimeoutError, ConnectionError ) as e:
 
@@ -295,6 +298,8 @@ class TwitterConnection:
             
             logging.critical ( "Unexpected Error during twitter API call:  ",
                                str ( e ) )
+
+            time.sleep ( UNEXPECTED_ERROR_SLEEP )
 
         finally:
 
