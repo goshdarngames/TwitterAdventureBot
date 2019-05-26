@@ -276,11 +276,13 @@ class TwitterConnection:
         The funcion will log a message and sleep if an error occurs. 
         """
 
+        api_return = None
+
         try:
 
             with self._apiLock:
 
-                api_call ( self._api )
+                api_return = api_call ( self._api )
 
         except ( Timeout, SSLError, ReadTimeoutError, ConnectionError ) as e:
 
@@ -304,6 +306,8 @@ class TwitterConnection:
         finally:
 
             time.sleep ( sleep_time )
+        
+        return api_return 
 
     #------------------------------------------------------------------------
 
