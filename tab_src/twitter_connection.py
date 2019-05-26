@@ -8,6 +8,12 @@ import json, threading, queue, time, logging, os
 
 import tweepy
 
+#Errors thrown during Internet connection interruption:
+
+from ssl import SSLError
+from requests.exceptions import Timeout, ConnectionError
+from urllib3.exceptions import ReadTimeoutError
+
 #----------------------------------------------------------------------------
 
 #Location of the twitter keys file.
@@ -17,10 +23,13 @@ TWITTER_KEYS_PATH = os.path.join ( "config","twitter_keys.json" )
 CHECK_MENTION_SLEEP = 4*60
 
 #How long to sleep after a tweep error message - usually a rate limit error
-TWEEP_RATE_ERROR_SLEEP = 20*60
+TWEEP_RATE_ERROR_SLEEP = 16*60
 
-#how long to sleep after an API call is made
-TWITTER_ERROR_SLEEP = 20*60
+#how long to sleep after an API call encounters a connection error
+NETWORK_ERROR_SLEEP = 20*60
+
+#Sleep period after an unexpected error from the twitter API
+UNEXPECTED_ERROR_SLEEP = 60*60
 
 
 #----------------------------------------------------------------------------
@@ -270,11 +279,22 @@ class TwitterConnection:
         try:
             api_call ()
 
+        except ( Timeout, SSLError, ReadTimeoutError, ConnectionError ) as e:
+
+            logging.warning ( "Network Error:  ", str ( e ) )
+
+            time.sleep ( NETWORK_ERROR_SLEEP )
+
+        except tweepy.RateLimitError as e:
+
+            logging.warning ( "Network Error:  ", str ( e ) )
+
+            time.sleep ( TWEEP_RATE_ERROR_SLEEP )
+
         except e:
-
-            logging.critical ( e )
-
-            time.sleep ( TWITTER_ERROR_SLEEP )
+            
+            logging.critical ( "Unexpected Error during twitter API call:  ",
+                               str ( e ) )
 
         finally:
 
