@@ -183,7 +183,7 @@ class TwitterConnection:
 
     #------------------------------------------------------------------------
 
-    def call_twitter_api ( self, api_call, sleep_time ):
+    def call_twitter_api ( self, api_call ):
         """
         This function is used to encapsulate calls to the twitter function
         so that logging and error handling can be contained in one place.
@@ -224,10 +224,6 @@ class TwitterConnection:
 
             time.sleep ( UNEXPECTED_ERROR_SLEEP )
 
-        finally:
-
-            time.sleep ( sleep_time )
-        
         return api_return 
 
     #------------------------------------------------------------------------
@@ -283,8 +279,7 @@ class TwitterConnection:
                     since_id  = latestMention 
                 ).items ()
 
-            mentions = self.call_twitter_api ( api_call,
-                                               CHECK_MENTION_SLEEP )
+            mentions = self.call_twitter_api ( api_call )
 
             #on first call record latest mention in order to
             #avoid mentions made before the system started
@@ -319,6 +314,8 @@ class TwitterConnection:
                         }
 
                     self._mentionQ.put ( mentionData )
+
+            time.sleep ( CHECK_MENTION_SLEEP )
 
 
     #------------------------------------------------------------------------
