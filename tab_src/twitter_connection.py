@@ -31,6 +31,9 @@ NETWORK_ERROR_SLEEP = 20*60
 #Sleep period after an unexpected error from the twitter API
 UNEXPECTED_ERROR_SLEEP = 60*60
 
+#Sleep period between sending messages in a chain
+MESSAGE_CHAIN_SLEEP = 5
+
 
 #----------------------------------------------------------------------------
 
@@ -262,7 +265,7 @@ class TwitterConnection:
 
     #------------------------------------------------------------------------
 
-    def call_twitter_api ( api_call, sleep_time ):
+    def call_twitter_api ( self, api_call, sleep_time ):
         """
         This function is used to encapsulate calls to the twitter function
         so that logging and error handling can be contained in one place.
@@ -326,33 +329,14 @@ class TwitterConnection:
             #Use a loop to send message in order to retry on rate limit
             while status == None:
 
-                try:
-                    with self._apiLock:
-                        status = self._api.update_status ( msg, replyID )
+                api_call = lambda api:  api.update_status ( msg, replyID )
 
-                except tweepy.RateLimitError:
+                status = self.call_twitter_api ( api_call, 
+                                                 MESSAGE_CHAIN_SLEEP  )
 
-                    logging.warning ( 
-                        "Send message chain encountered Twitter API "+
-                        "rate limit." )
+            replyID = status.id
 
-                    logging.warning ( "Sleeping until next rate period." )
-
-                    time.sleep ( TWEEP_RATE_ERROR_SLEEP )
-
-                except tweepy.TweepError as e:
-                    
-                    logging.critical ( "Send message chain API error:" )
-
-                    logging.critical ( e )
-
-                    break
-
-                else:
-
-                    replyID = status.id
-
-                    msgIDs.append ( replyID )
+            msgIDs.append ( replyID )
 
         return msgIDs
 
