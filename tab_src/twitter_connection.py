@@ -205,7 +205,7 @@ class TwitterConnection:
 
                 api_return = api_call ( self._api )
 
-        except ( Timeout, SSLError, ReadTimeoutError, ConnectionError ) as e:
+        except ( OSError, Timeout, SSLError, ReadTimeoutError ) as e:
 
             logging.warning ( "Network Error:  ", str ( e ) )
 
