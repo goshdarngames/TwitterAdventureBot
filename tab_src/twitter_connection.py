@@ -138,84 +138,6 @@ def chop_text ( txt, n = 265 ):
 
     return [ txt [ i : i + n ] for i in range ( 0, len ( txt ), n ) ]
 
-#----------------------------------------------------------------------------
-
-def check_mentions ( api, apiLock, mentionQ, stopEvent ):
-    """
-    This function is run by a thread in order to periodically check
-    twitter for mentions.
-    """
-
-    latestMention = None
-    
-    while not stopEvent.is_set ():
-
-        logging.info ( "Checking mentions." )
-
-        try:
-            with apiLock:
-
-                mentions = tweepy.Cursor ( 
-                        api.mentions_timeline,
-                        since_id  = latestMention 
-                    ).items ()
-
-        except tweepy.RateLimitError:
-
-            logging.warning ( 
-                "check_mentions encountered Twitter API rate limit." )
-
-            logging.warning ( "Sleeping until next rate period." )
-
-            time.sleep ( TWEEP_RATE_ERROR_SLEEP )
-
-        except tweepy.TweepError as e:
-            
-            logging.critical ( "check_mentions chain API error:" )
-
-            logging.critical ( e )
-
-
-        else:
-
-            #on firts call record latest mention in order to
-            #avoid mentions made before the system started
-
-            if latestMention == None:
-
-                try:
-
-                    latestMention = next ( mentions ).id
-
-                except StopIteration:
-                    
-                    latestMention = 0
-
-            
-            #Iterate through mentions as normal on future calls
-
-            else:
-
-                for mention in mentions:
-
-                    if mention.id > latestMention:
-
-                        latestMention = mention.id
-
-                    #Create a dict containing only the desired data
-                    mentionData = \
-                        {
-                            "text"     : mention.text,
-                            "id"       : mention.id,
-                            "username" : mention.user.screen_name
-                        }
-
-                    mentionQ.put ( mentionData )
-
-        finally:
-
-            time.sleep ( CHECK_MENTION_SLEEP )
-
 
 #----------------------------------------------------------------------------
 
@@ -245,12 +167,8 @@ class TwitterConnection:
         self._mentionQ = queue.Queue ()
 
         # This thread will loop continuously checking for twitter mentions
-        self.mentionThread = threading.Thread (  \
-                         target = check_mentions, 
-                         args   = ( self._api,
-                                    self._apiLock,
-                                    self._mentionQ,
-                                    self._stopEvent )) 
+        self.mentionThread = threading.Thread ( 
+                target = self._check_mentions_loop ) 
 
         self.mentionThread.daemon = True
         self.mentionThread.start ()
@@ -339,6 +257,69 @@ class TwitterConnection:
             msgIDs.append ( replyID )
 
         return msgIDs
+
+    #------------------------------------------------------------------------
+
+    def _check_mentions_loop ( self ):
+        """
+        This function is run by a thread in order to periodically check
+        twitter for mentions.
+
+        The mentions will be put on a queue so that they can be checked
+        using get_latest_mentions
+        """
+
+        #This is the id of the most recent mention.  The first time the 
+        #loop runs the value will be stored here so that mentions made 
+        #before the system started will be discarded
+        latestMention = None
+        
+        while not self._stopEvent.is_set ():
+
+            logging.info ( "Checking mentions." )
+
+            api_call = lambda api: tweepy.Cursor ( 
+                    api.mentions_timeline,
+                    since_id  = latestMention 
+                ).items ()
+
+            mentions = self.call_twitter_api ( api_call,
+                                               CHECK_MENTION_SLEEP )
+
+            #on first call record latest mention in order to
+            #avoid mentions made before the system started
+
+            if latestMention == None:
+
+                try:
+
+                    latestMention = next ( mentions ).id
+
+                except StopIteration:
+                    
+                    latestMention = 0
+
+            
+            #Iterate through mentions as normal on future calls
+
+            else:
+
+                for mention in mentions:
+
+                    if mention.id > latestMention:
+
+                        latestMention = mention.id
+
+                    #Create a dict containing only the desired data
+                    mentionData = \
+                        {
+                            "text"     : mention.text,
+                            "id"       : mention.id,
+                            "username" : mention.user.screen_name
+                        }
+
+                    self._mentionQ.put ( mentionData )
+
 
     #------------------------------------------------------------------------
 
