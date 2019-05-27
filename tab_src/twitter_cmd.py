@@ -29,7 +29,7 @@ def cmd_loop ( tc ):
 
             print ( "Command not recognized.  Valid commands :\n" +
                     "t [message]   - send a tweet\n"              +
-                    "m             - get mentionszn\n"
+                    "m             - get mentions\n"
                     "q             - quit" )
                      
 
