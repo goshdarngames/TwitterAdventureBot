@@ -245,8 +245,7 @@ class TwitterConnection:
 
                 api_call = lambda api:  api.update_status ( msg, replyID )
 
-                status = self.call_twitter_api ( api_call, 
-                                                 MESSAGE_CHAIN_SLEEP  )
+                status = self.call_twitter_api ( api_call )
 
             replyID = status.id
 
