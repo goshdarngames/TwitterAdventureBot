@@ -132,6 +132,35 @@ def chop_text ( txt, n = 265 ):
 
     return [ txt [ i : i + n ] for i in range ( 0, len ( txt ), n ) ]
 
+#----------------------------------------------------------------------------
+
+class CursorIterWrapper:
+
+    def __init__ ( self, twitterConnection, cursor ):
+
+        self.tc = twitterConnection
+        self.cursor = cursor
+
+    def __iter__ ( self ):
+
+        return self
+
+    def next ():
+
+        api_call = lambda api=None: next ( self.cursor )
+
+        mention = None
+
+        try:
+
+            mention = self.tc.call_twitter_api ( api_call )
+        
+        except StopIteration:
+
+            raise StopIteration
+
+        return mention
+
 
 #----------------------------------------------------------------------------
 
@@ -203,6 +232,11 @@ class TwitterConnection:
 
             time.sleep ( NETWORK_ERROR_SLEEP )
 
+        #special case for tweepy cursor calls when no more items
+        except StopIteration:
+
+            raise StopIteration
+
         except e:
             
             logging.critical ( "Unexpected Error during twitter API call:  ",
@@ -249,28 +283,29 @@ class TwitterConnection:
         occurred before the system started.
         """
 
-        #get an iterator for  all mentions
+        #get an iterator for all mentions using tweepy.Cursor
 
         api_call = lambda api: tweepy.Cursor ( 
                 api.mentions_timeline,
                 since_id  = None 
             ).items ()
 
-        mentions = self.call_twitter_api ( api_call )
+        cursor = self.call_twitter_api ( api_call )
+
+        iterator = CursorIterWrapper ( self, cursor )
 
         #try and get the id of the first item in the mentions iterator
 
-        latestMention = 0
-
         try:
-
-            latestMention = next ( mentions ).id
+            latestMention = iterator.next ()
 
         except StopIteration:
 
-            pass
-        
-        return latestMention
+            return 0
+
+        else:
+            
+            return latestMention.id
             
 
     #------------------------------------------------------------------------
@@ -293,10 +328,11 @@ class TwitterConnection:
                 since_id  = self.latestMention 
             ).items ()
 
-        mentions = self.call_twitter_api ( api_call )
+        cursor = self.call_twitter_api ( api_call )
 
+        iterator = CursorIterWrapper ( self, cursor )
 
-        for mention in mentions:
+        for mention in cursor:
 
             #update the latestMention field
 
