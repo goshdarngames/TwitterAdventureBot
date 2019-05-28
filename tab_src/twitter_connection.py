@@ -24,7 +24,7 @@ CONNECTION_ERRORS = ( SSLError, Timeout, ConnectionError,
 TWITTER_KEYS_PATH = os.path.join ( "config","twitter_keys.json" )
 
 #How long to sleep between checking mentions
-CHECK_MENTION_SLEEP = 4*60
+CHECK_MENTION_SLEEP = 5#4*60
 
 #How long to sleep after a tweep error message - usually a rate limit error
 TWEEP_RATE_ERROR_SLEEP = 16*60
