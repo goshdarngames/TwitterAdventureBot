@@ -145,7 +145,7 @@ class CursorIterWrapper:
 
         return self
 
-    def next ( self ):
+    def __next__ ( self ):
 
         api_call = lambda api=None: next ( self.cursor )
 
