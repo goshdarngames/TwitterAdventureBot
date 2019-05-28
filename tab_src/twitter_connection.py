@@ -16,7 +16,7 @@ from requests.exceptions import Timeout, ConnectionError
 from urllib3.exceptions import NewConnectionError
 
 CONNECTION_ERRORS = ( SSLError, Timeout, ConnectionError,
-                      NewConnectionError )
+                      NewConnectionError, tweepy.TweepError )
 
 #----------------------------------------------------------------------------
 
@@ -209,17 +209,17 @@ class TwitterConnection:
 
                 api_return = api_call ( self._api )
 
-        except CONNECTION_ERRORS as e:
-
-            logging.warning ( "Network Error:  ", str ( e ) )
-
-            time.sleep ( NETWORK_ERROR_SLEEP )
-
         except tweepy.RateLimitError as e:
 
             logging.warning ( "Network Error:  ", str ( e ) )
 
             time.sleep ( TWEEP_RATE_ERROR_SLEEP )
+
+        except CONNECTION_ERRORS as e:
+
+            logging.warning ( "Network Error:  ", str ( e ) )
+
+            time.sleep ( NETWORK_ERROR_SLEEP )
 
         except e:
             
