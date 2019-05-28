@@ -197,7 +197,7 @@ class TwitterConnection:
             time.sleep ( TWEEP_RATE_ERROR_SLEEP )
 
         except ( SSLError, Timeout, ConnectionError, OSError,
-                 NewConnectionError, tweepy.TweepError ) as e:
+                 NewConnectionError, tweepy.error.TweepError ) as e:
 
             logging.warning ( "Network Error:  ", str ( e ) )
 
