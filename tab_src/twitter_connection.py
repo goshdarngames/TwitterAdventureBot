@@ -15,9 +15,6 @@ from requests.exceptions import Timeout, ConnectionError
 
 from urllib3.exceptions import NewConnectionError
 
-CONNECTION_ERRORS = ( SSLError, Timeout, ConnectionError,
-                      NewConnectionError, tweepy.TweepError )
-
 #----------------------------------------------------------------------------
 
 #Location of the twitter keys file.
@@ -199,11 +196,22 @@ class TwitterConnection:
 
             time.sleep ( TWEEP_RATE_ERROR_SLEEP )
 
-        except CONNECTION_ERRORS as e:
+        except ( SSLError, Timeout, ConnectionError,
+                 NewConnectionError, tweepy.TweepError ) as e:
 
-            logging.warning ( "Network Error:  ", str ( e ) )
+            try:
 
-            time.sleep ( NETWORK_ERROR_SLEEP )
+                pass
+            
+            except tweepy.TweepError:
+
+                pass
+
+            finally:
+
+                logging.warning ( "Network Error:  ", str ( e ) )
+
+                time.sleep ( NETWORK_ERROR_SLEEP )
 
         except e:
             
