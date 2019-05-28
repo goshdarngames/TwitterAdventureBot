@@ -23,9 +23,6 @@ CONNECTION_ERRORS = ( SSLError, Timeout, ConnectionError,
 #Location of the twitter keys file.
 TWITTER_KEYS_PATH = os.path.join ( "config","twitter_keys.json" )
 
-#How long to sleep between checking mentions
-CHECK_MENTION_SLEEP = 5#4*60
-
 #How long to sleep after a tweep error message - usually a rate limit error
 TWEEP_RATE_ERROR_SLEEP = 16*60
 
@@ -34,10 +31,6 @@ NETWORK_ERROR_SLEEP = 20*60
 
 #Sleep period after an unexpected error from the twitter API
 UNEXPECTED_ERROR_SLEEP = 60*60
-
-#Sleep period between sending messages in a chain
-MESSAGE_CHAIN_SLEEP = 5
-
 
 #----------------------------------------------------------------------------
 
@@ -164,18 +157,9 @@ class TwitterConnection:
         # Used to ensure only one thread accesses the api object at a time
         self._apiLock = threading.Lock ()
 
-        # Used to signal that the twitter connection is no longer needed
-        self._stopEvent = threading.Event ()
-        
-        # Queue for posting and reading mentions from twitter
-        self._mentionQ = queue.Queue ()
-
-        # This thread will loop continuously checking for twitter mentions
-        self.mentionThread = threading.Thread ( 
-                target = self._check_mentions_loop ) 
-
-        self.mentionThread.daemon = True
-        self.mentionThread.start ()
+        #the get_latest_mentions method will return status id's greater
+        #than this value
+        self.latestMention = self._init_latest_mention ()
 
         return self
 
@@ -259,7 +243,30 @@ class TwitterConnection:
 
     #------------------------------------------------------------------------
 
-    def _check_mentions_loop ( self ):
+    def _init_latest_mention ( self ):
+
+        #get an iterator for  all mentions
+
+        api_call = lambda api: tweepy.Cursor ( 
+                api.mentions_timeline,
+                since_id  = None 
+            ).items ()
+
+        mentions = self.call_twitter_api ( api_call )
+
+        #try and get the id of the first item in the mentions iterator
+
+        try:
+
+            latestMention = next ( mentions ).id
+
+        except StopIteration:
+            
+            latestMention = 0
+
+    #------------------------------------------------------------------------
+
+    def get_latest_mentions ( self ):
         """
         This function is run by a thread in order to periodically check
         twitter for mentions.
@@ -268,73 +275,35 @@ class TwitterConnection:
         using get_latest_mentions
         """
 
-        #This is the id of the most recent mention.  The first time the 
-        #loop runs the value will be stored here so that mentions made 
-        #before the system started will be discarded
-        latestMention = None
-        
-        while not self._stopEvent.is_set ():
+        logging.info ( "Checking mentions." )
 
-            logging.info ( "Checking mentions." )
+        returnList = []
 
-            api_call = lambda api: tweepy.Cursor ( 
-                    api.mentions_timeline,
-                    since_id  = latestMention 
-                ).items ()
+        api_call = lambda api: tweepy.Cursor ( 
+                api.mentions_timeline,
+                since_id  = self.latestMention 
+            ).items ()
 
-            mentions = self.call_twitter_api ( api_call )
-
-            #on first call record latest mention in order to
-            #avoid mentions made before the system started
-
-            if latestMention == None:
-
-                try:
-
-                    latestMention = next ( mentions ).id
-
-                except StopIteration:
-                    
-                    latestMention = 0
-
-            
-            #Iterate through mentions as normal on future calls
-
-            else:
-
-                for mention in mentions:
-
-                    if mention.id > latestMention:
-
-                        latestMention = mention.id
-
-                    #Create a dict containing only the desired data
-                    mentionData = \
-                        {
-                            "text"     : mention.text,
-                            "id"       : mention.id,
-                            "username" : mention.user.screen_name
-                        }
-
-                    self._mentionQ.put ( mentionData )
-
-            time.sleep ( CHECK_MENTION_SLEEP )
+        mentions = self.call_twitter_api ( api_call )
 
 
-    #------------------------------------------------------------------------
+        for mention in mentions:
 
-    def get_latest_mentions ( self, maxM = 100 ):
+            #update the latestMention field
 
-        mentions = []
+            if mention.id > self.latestMention:
 
-        while len ( mentions ) < 100:
+                self.latestMention = mention.id
 
-            try:
-                m = self._mentionQ.get_nowait ()
-            except queue.Empty:
-                break
-            else:
-                mentions.append ( m )
+            #Create a dict containing only the desired data
+            mentionData = \
+                {
+                    "text"     : mention.text,
+                    "id"       : mention.id,
+                    "username" : mention.user.screen_name
+                }
 
-        return mentions
-    
+            returnList.append ( mentionData )
+
+        return returnList
+
