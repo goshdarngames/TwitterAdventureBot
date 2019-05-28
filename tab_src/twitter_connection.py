@@ -12,7 +12,11 @@ import tweepy
 
 from ssl import SSLError
 from requests.exceptions import Timeout, ConnectionError
-from urllib3.exceptions import ReadTimeoutError
+
+from urllib3.exceptions import NewConnectionError
+
+CONNECTION_ERRORS = ( SSLError, Timeout, ConnectionError,
+                      NewConnectionError )
 
 #----------------------------------------------------------------------------
 
@@ -205,7 +209,7 @@ class TwitterConnection:
 
                 api_return = api_call ( self._api )
 
-        except ( OSError, Timeout, SSLError, ReadTimeoutError ) as e:
+        except CONNECTION_ERRORS as e:
 
             logging.warning ( "Network Error:  ", str ( e ) )
 
