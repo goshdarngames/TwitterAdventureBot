@@ -167,7 +167,7 @@ class TwitterConnection:
 
     def __exit__ ( self, *args ):
 
-        self._stopEvent.set ()
+        pass
 
     #------------------------------------------------------------------------
 
@@ -244,6 +244,12 @@ class TwitterConnection:
     #------------------------------------------------------------------------
 
     def _init_latest_mention ( self ):
+        """
+        Returns the id of the most recent mention.
+
+        Used when the system starts to get the most recent mention that
+        occurred before the system started.
+        """
 
         #get an iterator for  all mentions
 
@@ -256,13 +262,18 @@ class TwitterConnection:
 
         #try and get the id of the first item in the mentions iterator
 
+        latestMention = 0
+
         try:
 
             latestMention = next ( mentions ).id
 
         except StopIteration:
+
+            pass
+        
+        return latestMention
             
-            latestMention = 0
 
     #------------------------------------------------------------------------
 
