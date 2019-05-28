@@ -161,6 +161,16 @@ class CursorIterWrapper:
 
         return mention
 
+    def first ( self ):
+
+        try:
+
+            return self.__next__ ()
+        
+        except StopIteration:
+
+            return None
+
 
 #----------------------------------------------------------------------------
 
@@ -292,14 +302,13 @@ class TwitterConnection:
 
         cursor = self.call_twitter_api ( api_call )
 
-        iterator = CursorIterWrapper ( self, cursor )
+        wrappedIterator = CursorIterWrapper ( self, cursor )
 
         #try and get the id of the first item in the mentions iterator
 
-        try:
-            latestMention = iterator.next ()
+        latestMention = wrappedIterator.first ()
 
-        except StopIteration:
+        if latestMention is None:
 
             return 0
 
@@ -330,9 +339,9 @@ class TwitterConnection:
 
         cursor = self.call_twitter_api ( api_call )
 
-        iterator = CursorIterWrapper ( self, cursor )
+        wrappedIterator = CursorIterWrapper ( self, cursor )
 
-        for mention in iterator:
+        for mention in wrappedIterator:
 
             #update the latestMention field
 
