@@ -332,7 +332,7 @@ class TwitterConnection:
 
         iterator = CursorIterWrapper ( self, cursor )
 
-        for mention in cursor:
+        for mention in iterator:
 
             #update the latestMention field
 
