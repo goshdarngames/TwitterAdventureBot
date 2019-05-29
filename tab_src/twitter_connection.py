@@ -247,7 +247,7 @@ class TwitterConnection:
 
             raise StopIteration
 
-        except e:
+        except Exception as e:
             
             logging.critical ( "Unexpected Error during twitter API call:  ",
                                str ( e ) )
