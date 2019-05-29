@@ -235,8 +235,8 @@ class TwitterConnection:
 
             time.sleep ( TWEEP_RATE_ERROR_SLEEP )
 
-        except ( tweepy.TweepError, SSLError, Timeout, ConnectionError,
-                 OSError, NewConnectionError, ) as e:
+        except ( SSLError, Timeout, ConnectionError,
+                 NewConnectionError ) as e:
 
             logging.warning ( "Network Error:  ", str ( e ) )
 
@@ -342,6 +342,11 @@ class TwitterConnection:
         wrappedIterator = CursorIterWrapper ( self, cursor )
 
         for mention in wrappedIterator:
+
+            #API return can be None if there is a connection error
+            if mention is None:
+
+                break
 
             #update the latestMention field
 
