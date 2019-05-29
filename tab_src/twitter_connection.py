@@ -229,14 +229,20 @@ class TwitterConnection:
 
                 api_return = api_call ( self._api )
 
-        except tweepy.RateLimitError:
+        except tweepy.RateLimitError as e:
 
-            logging.warning ( "Network Error:  ", exc_info=True )
+            logging.warning ( "Rate-limit Error:  ", e )
 
             time.sleep ( TWEEP_RATE_ERROR_SLEEP )
 
-        except ( SSLError, Timeout, ConnectionError, NewConnectionError,
-                 tweepy.TweepError):
+        #Most likely thrown during network error
+        except tweepy.TweepError as e:
+
+            logging.warning ( "Tweepy Error:  ", e )
+
+            time.sleep ( NETWORK_ERROR_SLEEP )
+
+        except ( SSLError, Timeout, ConnectionError, NewConnectionError ):
 
             logging.warning ( "Network Error:  ", exc_info=True )
 
