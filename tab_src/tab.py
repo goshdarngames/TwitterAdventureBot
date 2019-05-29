@@ -20,7 +20,7 @@ from twitter_connection import TwitterConnection
 #----------------------------------------------------------------------------
 
 #How long to sleep at the end of each 'game loop'
-GAME_LOOP_SLEEP = 10
+GAME_LOOP_SLEEP = 5*60
 
 #----------------------------------------------------------------------------
 

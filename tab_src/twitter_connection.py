@@ -21,13 +21,13 @@ from urllib3.exceptions import NewConnectionError
 TWITTER_KEYS_PATH = os.path.join ( "config","twitter_keys.json" )
 
 #How long to sleep after a tweep error message - usually a rate limit error
-TWEEP_RATE_ERROR_SLEEP = 16#*60
+TWEEP_RATE_ERROR_SLEEP = 16*60
 
 #how long to sleep after an API call encounters a connection error
-NETWORK_ERROR_SLEEP = 20#*60
+NETWORK_ERROR_SLEEP = 20*60
 
 #Sleep period after an unexpected error from the twitter API
-UNEXPECTED_ERROR_SLEEP = 60#*60
+UNEXPECTED_ERROR_SLEEP = 60*60
 
 #----------------------------------------------------------------------------
 
