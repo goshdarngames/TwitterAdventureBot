@@ -21,13 +21,13 @@ from urllib3.exceptions import NewConnectionError
 TWITTER_KEYS_PATH = os.path.join ( "config","twitter_keys.json" )
 
 #How long to sleep after a tweep error message - usually a rate limit error
-TWEEP_RATE_ERROR_SLEEP = 16*60
+TWEEP_RATE_ERROR_SLEEP = 16#*60
 
 #how long to sleep after an API call encounters a connection error
-NETWORK_ERROR_SLEEP = 20*60
+NETWORK_ERROR_SLEEP = 20#*60
 
 #Sleep period after an unexpected error from the twitter API
-UNEXPECTED_ERROR_SLEEP = 60*60
+UNEXPECTED_ERROR_SLEEP = 60#*60
 
 #----------------------------------------------------------------------------
 
@@ -229,16 +229,15 @@ class TwitterConnection:
 
                 api_return = api_call ( self._api )
 
-        except tweepy.RateLimitError as e:
+        except tweepy.RateLimitError:
 
-            logging.warning ( "Network Error:  ", str ( e ) )
+            logging.warning ( "Network Error:  ", exc_info=True )
 
             time.sleep ( TWEEP_RATE_ERROR_SLEEP )
 
-        except ( SSLError, Timeout, ConnectionError,
-                 NewConnectionError ) as e:
+        except ( SSLError, Timeout, ConnectionError, NewConnectionError ):
 
-            logging.warning ( "Network Error:  ", str ( e ) )
+            logging.warning ( "Network Error:  ", exc_info=True )
 
             time.sleep ( NETWORK_ERROR_SLEEP )
 
@@ -247,10 +246,10 @@ class TwitterConnection:
 
             raise StopIteration
 
-        except Exception as e:
+        except Exception:
             
             logging.critical ( "Unexpected Error during twitter API call:  ",
-                               str ( e ) )
+                               exc_info=True )
 
             time.sleep ( UNEXPECTED_ERROR_SLEEP )
 
