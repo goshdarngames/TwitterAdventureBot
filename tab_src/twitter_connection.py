@@ -231,14 +231,14 @@ class TwitterConnection:
 
         except tweepy.RateLimitError as e:
 
-            logging.warning ( "Rate-limit Error:  ", e )
+            logging.warning ( "Rate-limit Error:  %s", e )
 
             time.sleep ( TWEEP_RATE_ERROR_SLEEP )
 
         #Most likely thrown during network error
         except tweepy.TweepError as e:
 
-            logging.warning ( "Tweepy Error:  ", e )
+            logging.warning ( "Tweepy Error: %s  ", e )
 
             time.sleep ( NETWORK_ERROR_SLEEP )
 
